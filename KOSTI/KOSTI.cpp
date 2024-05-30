@@ -7,6 +7,20 @@
 #include <stdio.h>
 #include <locale.h>
 #include <windows.h>
+#pragma comment(lib, "SDL2_mixer.lib")
+Mix_Chunk* Sound = NULL;
+Mix_Music* fon = NULL;
+//void loadmusic()
+//{
+//    fon = Mix_LoadMUS("fon.wav");
+//    Mix_PlayMusic(fon, -1);
+//}
+//void sound(char* name)
+//{
+//    Sound = Mix_LoadWAV(name);
+//    Mix_PlayChannel(-1, Sound, 0);
+//}
+
 enum State {
     MENU,
     GAME,
@@ -20,6 +34,8 @@ enum State {
     BONUS_GAME_2_2,
     BONUS_GAME_3,
     BONUS_GAME_3_2,
+    BONUS_WIN,
+    BONUS_LOSE,
     MAIN_GAME,
     EXIT,
     SETTINGS,
@@ -27,6 +43,18 @@ enum State {
     RULES_2,
     PROGRESS,
 };
+SDL_Texture* get_text_texture(SDL_Renderer*& renderer, char* text, TTF_Font* font) {
+    SDL_Surface* textSurface = NULL;
+    SDL_Color fore_color = { 255,255, 255 };
+    textSurface = TTF_RenderUTF8_Blended(font, text, fore_color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_FreeSurface(textSurface);
+    return texture;
+}
+void draw_text(SDL_Renderer*& renderer, SDL_Texture* texture, SDL_Rect rect)
+{
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
 bool isHit(int x, int y, SDL_Rect rect) {
     if (x >= rect.x && x <= (rect.x + rect.w) && y >= rect.y && y <= (rect.y + rect.h))
     {
@@ -40,11 +68,24 @@ void draw(SDL_Renderer*& renderer, SDL_Texture* texture, SDL_Rect rect)
 }
 
 int main(int argc, char** argv) {
+    srand(time(NULL));
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     window = SDL_CreateWindow(u8"Кости", 0, 30, 1535, 800, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
+
+    TTF_Init();
+    TTF_Font* my_font = TTF_OpenFont("shrift.ttf", 36);
+    SDL_Texture* textTexture;
+    int k = 0;
+    char text[10];
+
+    /*Mix_Init(0);
+    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+
+    char music[10] = "music.wav";*/
+
     SDL_Surface* fonImage = IMG_Load("m1.bmp"); //самая первая картинка с меню
     SDL_SetColorKey(fonImage, SDL_TRUE, SDL_MapRGB(fonImage->format, 255, 255, 255));
     SDL_Texture* fonTexture = SDL_CreateTextureFromSurface(renderer, fonImage);
@@ -219,6 +260,46 @@ int main(int argc, char** argv) {
     SDL_Texture* redNumberTexture = SDL_CreateTextureFromSurface(renderer, redNumberImage);
     SDL_FreeSurface(redNumberImage);
 
+    SDL_Surface* bonusWinImage = IMG_Load("bonusWin.bmp"); //победа в бонусной игре
+    SDL_SetColorKey(bonusWinImage, SDL_TRUE, SDL_MapRGB(bonusWinImage->format, 255, 255, 255));
+    SDL_Texture* bonusWinTexture = SDL_CreateTextureFromSurface(renderer, bonusWinImage);
+    SDL_FreeSurface(bonusWinImage);
+
+
+    SDL_Surface* bonusLoseImage = IMG_Load("bonusLose.bmp"); //проигрыш в бонусной игре
+    SDL_SetColorKey(bonusLoseImage, SDL_TRUE, SDL_MapRGB(bonusLoseImage->format, 255, 255, 255));
+    SDL_Texture* bonusLoseTexture = SDL_CreateTextureFromSurface(renderer, bonusLoseImage);
+    SDL_FreeSurface(bonusLoseImage);
+
+    SDL_Surface* point1Image = IMG_Load("point1.bmp"); //кубик со значением 1
+    SDL_SetColorKey(point1Image, SDL_TRUE, SDL_MapRGB(point1Image->format, 255, 255, 255));
+    SDL_Texture* point1Texture = SDL_CreateTextureFromSurface(renderer, point1Image);
+    SDL_FreeSurface(point1Image);
+
+    SDL_Surface* point2Image = IMG_Load("point2.bmp"); //кубик со значением 2
+    SDL_SetColorKey(point2Image, SDL_TRUE, SDL_MapRGB(point2Image->format, 255, 255, 255));
+    SDL_Texture* point2Texture = SDL_CreateTextureFromSurface(renderer, point2Image);
+    SDL_FreeSurface(point2Image);
+
+    SDL_Surface* point3Image = IMG_Load("point3.bmp"); //кубик со значением 3
+    SDL_SetColorKey(point3Image, SDL_TRUE, SDL_MapRGB(point3Image->format, 255, 255, 255));
+    SDL_Texture* point3Texture = SDL_CreateTextureFromSurface(renderer, point3Image);
+    SDL_FreeSurface(point3Image);
+
+    SDL_Surface* point4Image = IMG_Load("point4.bmp"); //кубик со значением 4
+    SDL_SetColorKey(point4Image, SDL_TRUE, SDL_MapRGB(point4Image->format, 255, 255, 255));
+    SDL_Texture* point4Texture = SDL_CreateTextureFromSurface(renderer, point4Image);
+    SDL_FreeSurface(point4Image);
+
+    SDL_Surface* point5Image = IMG_Load("point5.bmp"); //кубик со значением 5
+    SDL_SetColorKey(point5Image, SDL_TRUE, SDL_MapRGB(point5Image->format, 255, 255, 255));
+    SDL_Texture* point5Texture = SDL_CreateTextureFromSurface(renderer, point5Image);
+    SDL_FreeSurface(point5Image);
+
+    SDL_Surface* point6Image = IMG_Load("point6.bmp"); //кубик со значением 6
+    SDL_SetColorKey(point6Image, SDL_TRUE, SDL_MapRGB(point6Image->format, 255, 255, 255));
+    SDL_Texture* point6Texture = SDL_CreateTextureFromSurface(renderer, point6Image);
+    SDL_FreeSurface(point6Image);
 
     //   МЕСТОПОЛОЖЕНИE КНОПОК     ///    
     SDL_Rect Quit = { 1054, 0, 80, 80 };
@@ -269,7 +350,10 @@ int main(int argc, char** argv) {
     SDL_Rect seventeen = { 1340, 431, 85, 60 };
     SDL_Rect eightteen = { 1435, 431, 85, 60 };
 
-
+    SDL_Rect bonus_score = { 848, 423, 70, 70 };
+    SDL_Rect kub1 = { 590,268,100,100 };
+    SDL_Rect kub2 = { 714, 268, 100, 100 };
+    SDL_Rect kub3 = { 838,268,100,100 };
 
     SDL_Event event;
     State currentState = MENU;
@@ -277,6 +361,11 @@ int main(int argc, char** argv) {
     int x, y;
     int choiceMode = 0;
     int choiceDiffLevel = 0;
+    int try1=0, try2=0;
+    int k1 = 0, k2[2] = { 0 }, k3[3] = { 0 };
+    int choice_k = 0;
+    int sum2 = 0;
+
     while (!quit)
     {
         while (SDL_PollEvent(&event)) {
@@ -595,14 +684,17 @@ int main(int argc, char** argv) {
                             break;
                         }
                         if (isHit(x, y, oneCube)) {
+                            choice_k = 1;
                             currentState = BONUS_GAME_1;
                             break;
                         }
                         if (isHit(x, y, twoCube)) {
+                            choice_k = 2;
                             currentState = BONUS_GAME_2;
                             break;
                         }
                         if (isHit(x, y, threeCube)) {
+                            choice_k = 3;
                             currentState = BONUS_GAME_3;
                             break;
                         }
@@ -656,36 +748,42 @@ int main(int argc, char** argv) {
                         if (isHit(x, y, three))
                         {
                             //это 1
+                            try1 = 1;
                             currentState = BONUS_GAME_1_2;
                             break;
                         }
                         if (isHit(x, y, four))
                         {
                             //2
+                            try1 = 2;
                             currentState = BONUS_GAME_1_2;
                             break;
                         }
                         if (isHit(x, y, five))
                         {
                             //3
+                            try1 = 3;
                             currentState = BONUS_GAME_1_2;
                             break;
                         }
                         if (isHit(x, y, six))
                         {
                             //4
+                            try1 = 4;
                             currentState = BONUS_GAME_1_2;
                             break;
                         }
                         if (isHit(x, y, seven))
                         {
                             //5
+                            try1 = 5;
                             currentState = BONUS_GAME_1_2;
                             break;
                         }
                         if (isHit(x, y, eight))
                         {
                             //6
+                            try1 = 6;
                             currentState = BONUS_GAME_1_2;
                             break;
                         }
@@ -764,43 +862,82 @@ int main(int argc, char** argv) {
                         if (isHit(x, y, three))
                         {
                             //1
-                            currentState = BONUS_GAME_1_2;
-                            draw(renderer, redNumberTexture, three);
+                            try2 = 1;
+                            k1 = rand() % 6 + 1;
+                            if (try1 == k1 || try2 == k1)
+                            {
+                                currentState = BONUS_WIN;
+                            }
+                            else{ currentState = BONUS_LOSE; }
+                            
+                            //draw(renderer, redNumberTexture, three);
                             break;
                         }
                         if (isHit(x, y, four))
                         {
                             //2
-                            currentState = BONUS_GAME_1_2;
-                            draw(renderer, redNumberTexture, four);
+                            try2 = 2;
+                            k1 = rand() % 6 + 1;
+                            if (try1 == k1 || try2 == k1)
+                            {
+                                currentState = BONUS_WIN;
+                            }
+                            else { currentState = BONUS_LOSE; }
+                      
+                            //draw(renderer, redNumberTexture, four);
                             break;
                         }
                         if (isHit(x, y, five))
                         {
                             //3
-                            currentState = BONUS_GAME_1_2;
-                            draw(renderer, redNumberTexture, five);
+                            try2 = 3;
+                            k1 = rand() % 6 + 1;
+                            if (try1 == k1 || try2 == k1)
+                            {
+                                currentState = BONUS_WIN;
+                            }
+                            else { currentState = BONUS_LOSE; }
+                           
+                            //draw(renderer, redNumberTexture, five);
                             break;
                         }
                         if (isHit(x, y, six))
                         {
                             //4
-                            currentState = BONUS_GAME_1_2;
-                            draw(renderer, redNumberTexture, six);
+                            try2 = 4;
+                            k1 = rand() % 6 + 1;
+                            if (try1 == k1 || try2 == k1)
+                            {
+                                currentState = BONUS_WIN;
+                            }
+                            else { currentState = BONUS_LOSE; }
+                            //draw(renderer, redNumberTexture, six);
                             break;
                         }
                         if (isHit(x, y, seven))
                         {
                             //5
-                            currentState = BONUS_GAME_1_2;
-                            draw(renderer, redNumberTexture, seven);
+                            try2 = 5;
+                            k1 = rand() % 6 + 1;
+                            if (try1 == k1 || try2 == k1)
+                            {
+                                currentState = BONUS_WIN;
+                            }
+                            else { currentState = BONUS_LOSE; }
+                            //draw(renderer, redNumberTexture, seven);
                             break;
                         }
                         if (isHit(x, y, eight))
                         {
                             //6
-                            currentState = BONUS_GAME_1_2;
-                            draw(renderer, redNumberTexture, eight);
+                            try2 = 6;
+                            k1 = rand() % 6 + 1;
+                            if (try1 == k1 || try2 == k1)
+                            {
+                                currentState = BONUS_WIN;
+                            }
+                            else { currentState = BONUS_LOSE; }
+                            //draw(renderer, redNumberTexture, eight);
                             break;
                         }
 
@@ -882,78 +1019,78 @@ int main(int argc, char** argv) {
                         if (isHit(x, y, three))
                         {
                             //2
+                            try1 = 2;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, three);
                             break;
                         }
                         if (isHit(x, y, four))
                         {
                             //3
+                            try1 = 3;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, four);
                             break;
                         }
                         if (isHit(x, y, five))
                         {
                             //4
+                            try1 = 4;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, five);
                             break;
                         }
                         if (isHit(x, y, six))
                         {
                             //5
+                            try1 = 5;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, six);
                             break;
                         }
                         if (isHit(x, y, seven))
                         {
                             //6
+                            try1 = 6;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, seven);
                             break;
                         }
                         if (isHit(x, y, eight))
                         {
                             //7
+                            try1 = 7;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, eight);
                             break;
                         }
                         if (isHit(x, y, nine))
                         {
                             //8
+                            try1 = 8;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, nine);
                             break;
                         }
                         if (isHit(x, y, ten))
                         {
                             //9
+                            try1 = 9;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, ten);
                             break;
                         }
                         if (isHit(x, y, eleven))
                         {
                             //10
+                            try1 = 10;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, eleven);
                             break;
                         }
                         if (isHit(x, y, twelve))
                         {
                             //11
+                            try1 = 11;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, twelve);
                             break;
                         }
                         if (isHit(x, y, thirteen))
                         {
                             //12
+                            try1 = 12;
                             currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, thirteen);
                             break;
                         }
                         
@@ -1061,78 +1198,144 @@ int main(int argc, char** argv) {
                         if (isHit(x, y, three))
                         {
                             //2
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, three);
+                            try2 = 2;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];   
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, four))
                         {
                             //3
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, four);
+                            try2 = 3;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, five))
                         {
                             //4
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, five);
+                            try2 = 4;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, six))
                         {
                             //5
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, six);
+                            try2 = 5;
+                            int sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, seven))
                         {
                             //6
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, seven);
+                            try2 = 6;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, eight))
                         {
                             //7
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, eight);
+                            try2 = 7;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, nine))
                         {
                             //8
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, nine);
+                            try2 = 8;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, ten))
                         {
                             //9
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, ten);
+                            try2 = 9;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, eleven))
                         {
                             //10
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, eleven);
+                            try2 = 10;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, twelve))
                         {
                             //11
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, twelve);
+                            try2 = 11;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, thirteen))
                         {
                             //12
-                            currentState = BONUS_GAME_2_2;
-                            draw(renderer, redNumberTexture, thirteen);
+                            try2 = 12;
+                            sum2 = 0;
+                            for (int i = 0; i < 2; i++) {
+                                k2[i] = rand() % 6 + 1;
+                                sum2 += k2[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
 
@@ -1240,81 +1443,97 @@ int main(int argc, char** argv) {
                         if (isHit(x, y, three))
                         {
                             //как написано вверху, так и есть 
+                            try1 = 3;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, four))
                         {
+                            try1 = 4;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, five))
                         {
+                            try1 = 5;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, six))
                         {
+                            try1 = 6;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, seven))
                         {
+                            try1 = 7;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, eight))
                         {
+                            try1 = 8;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, nine))
                         {
+                            try1 = 9;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, ten))
                         {
+                            try1 = 10;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, eleven))
                         {
+                            try1 = 11;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, twelve))
                         {
+                            try1 = 12;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, thirteen))
                         {
+                            try1 = 13;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, fourteen))
                         {
+                            try1 = 14;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, fifteen))
                         {
+                            try1 = 15;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, sixteen))
                         {
+                            try1 = 16;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, seventeen))
                         {
+                            try1 = 17;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
                         if (isHit(x, y, eightteen))
                         {
+                            try1 = 18;
                             currentState = BONUS_GAME_3_2;
                             break;
                         }
@@ -1436,82 +1655,195 @@ int main(int argc, char** argv) {
                         if (isHit(x, y, three))
                         {
                             //как написано вверху, так и есть 
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 3;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, four))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 4;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, five))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 5;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, six))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 6;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, seven))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 7;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
+                          
                             break;
                         }
                         if (isHit(x, y, eight))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 8;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, nine))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 9;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, ten))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 10;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, eleven))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 11;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, twelve))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 12;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, thirteen))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 13;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, fourteen))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 14;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, fifteen))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 15;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, sixteen))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 16;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, seventeen))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 17;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                         if (isHit(x, y, eightteen))
                         {
-                            currentState = BONUS_GAME_3_2;
+                            try2 = 18;
+                            sum2 = 0;
+                            for (int i = 0; i < 3; i++) {
+                                k3[i] = rand() % 5 + 1;
+                                sum2 += k3[i];
+                            }
+                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                            else { currentState = BONUS_LOSE; }
                             break;
                         }
                     }
@@ -1616,6 +1948,154 @@ int main(int argc, char** argv) {
                 //угадал ли человек выбранное им число, в фунцию будем передавать нынешнее состояние и выбранное число 
                 //пусть фунция будет булева, если угадывает, то состояние поменяется на картинку с "вы угадали", если нет, то нет
 
+                case BONUS_WIN:
+                {
+                    draw(renderer, bonusWinTexture, bonusGame);
+                    if (choice_k == 1) {
+                        _itoa_s(k1, text, 10);
+                        textTexture = get_text_texture(renderer, text, my_font);
+                        draw_text(renderer, textTexture, bonus_score);
+                        if (k1 == 1) { draw(renderer, point1Texture, kub2); }
+                        if (k1 == 2) { draw(renderer, point2Texture, kub2); }
+                        if (k1 == 3) { draw(renderer, point3Texture, kub2); }
+                        if (k1 == 4) { draw(renderer, point4Texture, kub2); }
+                        if (k1 == 5) { draw(renderer, point5Texture, kub2); }
+                        if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                    }
+                    if (choice_k == 2) {
+                        int sum = 0;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            sum += k2[i];
+                        }
+                        _itoa_s(sum, text, 10);
+                        textTexture = get_text_texture(renderer, text, my_font);
+                        draw_text(renderer, textTexture, bonus_score);
+                        //1 кубик
+                        if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
+                        if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
+                        if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
+                        if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
+                        if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
+                        if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
+                        //2 кубик
+                        if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
+                        if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
+                        if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
+                        if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
+                        if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
+                        if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
+                    }
+                    if (choice_k == 3) {
+                        int sum = 0;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            sum += k3[i];
+                        }
+                        _itoa_s(sum, text, 10);
+                        textTexture = get_text_texture(renderer, text, my_font);
+                        draw_text(renderer, textTexture, bonus_score);
+                        if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
+                        if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
+                        if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
+                        if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
+                        if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
+                        if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
+
+
+                        if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
+                        if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
+                        if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
+                        if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
+                        if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
+                        if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
+
+
+                        if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
+                        if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
+                        if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
+                        if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
+                        if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
+                        if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
+
+
+                    }
+                    break;
+                }
+                case BONUS_LOSE:
+                {
+                    draw(renderer, bonusLoseTexture, bonusGame);
+                    if (choice_k == 1) {
+                        _itoa_s(k1, text, 10);
+                        textTexture = get_text_texture(renderer, text, my_font);
+                        draw_text(renderer, textTexture, bonus_score);
+                        if (k1 == 1) { draw(renderer, point1Texture, kub2); }
+                        if (k1 == 2) { draw(renderer, point2Texture, kub2); }
+                        if (k1 == 3) { draw(renderer, point3Texture, kub2); }
+                        if (k1 == 4) { draw(renderer, point4Texture, kub2); }
+                        if (k1 == 5) { draw(renderer, point5Texture, kub2); }
+                        if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                    }
+                    if (choice_k == 2) {
+                        int sum = 0;
+                        for (int i = 0; i < 2; i++)
+                        {
+                            sum += k2[i];
+                        }
+                        _itoa_s(sum, text, 10);
+                        textTexture = get_text_texture(renderer, text, my_font);
+                        draw_text(renderer, textTexture, bonus_score);
+                        //1 кубик
+                        if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
+                        if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
+                        if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
+                        if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
+                        if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
+                        if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
+
+                        //2 кубик
+                        if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
+                        if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
+                        if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
+                        if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
+                        if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
+                        if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
+
+                    }
+                    if (choice_k == 3) {
+                        int sum = 0;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            sum += k3[i];
+                        }
+                        _itoa_s(sum, text, 10);
+                        textTexture = get_text_texture(renderer, text, my_font);
+                        draw_text(renderer, textTexture, bonus_score);
+                        if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
+                        if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
+                        if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
+                        if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
+                        if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
+                        if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
+
+
+                        if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
+                        if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
+                        if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
+                        if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
+                        if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
+                        if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
+
+
+                        if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
+                        if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
+                        if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
+                        if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
+                        if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
+                        if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
+                    }
+                    break;
+                }
                 case MAIN_GAME:
                     break;
 
