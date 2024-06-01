@@ -10,16 +10,16 @@
 #pragma comment(lib, "SDL2_mixer.lib")
 Mix_Chunk* Sound = NULL;
 Mix_Music* fon = NULL;
-//void loadmusic()
-//{
-//    fon = Mix_LoadMUS("fon.wav");
-//    Mix_PlayMusic(fon, -1);
-//}
-//void sound(char* name)
-//{
-//    Sound = Mix_LoadWAV(name);
-//    Mix_PlayChannel(-1, Sound, 0);
-//}
+void loadmusic()
+{
+    fon = Mix_LoadMUS("fon.wav");
+    Mix_PlayMusic(fon, -1);
+}
+void sound(char* name)
+{
+    Sound = Mix_LoadWAV(name);
+    Mix_PlayChannel(-1, Sound, 0);
+}
 
 enum State {
     MENU,
@@ -27,6 +27,8 @@ enum State {
     CHOICE_GAME_MODE,
     CHOICE_DIFFICULTY_LEVEL,
     CHOICE_BONUS_GAME,
+    CHOICE_PLAYER1,
+    CHOICE_PLAYER2,
     BONUS_GAME,
     BONUS_GAME_1,
     BONUS_GAME_1_2,
@@ -174,7 +176,7 @@ int main(int argc, char** argv) {
     SDL_SetColorKey(mediumImage, SDL_TRUE, SDL_MapRGB(mediumImage->format, 255, 255, 255));
     SDL_Texture* mediumTexture = SDL_CreateTextureFromSurface(renderer, mediumImage);
     SDL_FreeSurface(mediumImage);
-    
+
     SDL_Surface* hardImage = IMG_Load("hard.bmp"); //сложный уровень
     SDL_SetColorKey(hardImage, SDL_TRUE, SDL_MapRGB(hardImage->format, 255, 255, 255));
     SDL_Texture* hardTexture = SDL_CreateTextureFromSurface(renderer, hardImage);
@@ -301,6 +303,41 @@ int main(int argc, char** argv) {
     SDL_Texture* point6Texture = SDL_CreateTextureFromSurface(renderer, point6Image);
     SDL_FreeSurface(point6Image);
 
+    SDL_Surface* settingsImage = IMG_Load("settings.bmp"); //окно настроек
+    SDL_SetColorKey(settingsImage, SDL_TRUE, SDL_MapRGB(settingsImage->format, 255, 255, 255));
+    SDL_Texture* settingsTexture = SDL_CreateTextureFromSurface(renderer, settingsImage);
+    SDL_FreeSurface(settingsImage);
+
+    SDL_Surface* onImage = IMG_Load("on.bmp"); //настройка включена
+    SDL_SetColorKey(onImage, SDL_TRUE, SDL_MapRGB(onImage->format, 255, 255, 255));
+    SDL_Texture* onTexture = SDL_CreateTextureFromSurface(renderer, onImage);
+    SDL_FreeSurface(onImage);
+
+    SDL_Surface* offImage = IMG_Load("off.bmp"); //настройка выключена
+    SDL_SetColorKey(offImage, SDL_TRUE, SDL_MapRGB(offImage->format, 255, 255, 255));
+    SDL_Texture* offTexture = SDL_CreateTextureFromSurface(renderer, offImage);
+    SDL_FreeSurface(offImage);
+
+    SDL_Surface* choicePlayer1Image = IMG_Load("choicePlayer1.bmp"); //окно выбора первого игрока
+    SDL_SetColorKey(choicePlayer1Image, SDL_TRUE, SDL_MapRGB(choicePlayer1Image->format, 255, 255, 255));
+    SDL_Texture* choicePlayer1Texture = SDL_CreateTextureFromSurface(renderer, choicePlayer1Image);
+    SDL_FreeSurface(choicePlayer1Image);
+
+    SDL_Surface* choicePlayer2Image = IMG_Load("choicePlayer2.bmp"); //окно выбора второго игрока
+    SDL_SetColorKey(choicePlayer2Image, SDL_TRUE, SDL_MapRGB(choicePlayer2Image->format, 255, 255, 255));
+    SDL_Texture* choicePlayer2Texture = SDL_CreateTextureFromSurface(renderer, choicePlayer2Image);
+    SDL_FreeSurface(choicePlayer2Image);
+
+    SDL_Surface* welcomeMainGameImage = IMG_Load("welcomeMainGame.bmp"); //окно выбора второго игрока
+    SDL_SetColorKey(welcomeMainGameImage, SDL_TRUE, SDL_MapRGB(welcomeMainGameImage->format, 255, 255, 255));
+    SDL_Texture* welcomeMainGameTexture = SDL_CreateTextureFromSurface(renderer, welcomeMainGameImage);
+    SDL_FreeSurface(welcomeMainGameImage);
+
+    SDL_Surface* mainGameImage = IMG_Load("mainGame.bmp"); //окно выбора второго игрока
+    SDL_SetColorKey(mainGameImage, SDL_TRUE, SDL_MapRGB(mainGameImage->format, 255, 255, 255));
+    SDL_Texture* mainGameTexture = SDL_CreateTextureFromSurface(renderer, mainGameImage);
+    SDL_FreeSurface(mainGameImage);
+
     //   МЕСТОПОЛОЖЕНИE КНОПОК     ///    
     SDL_Rect Quit = { 1054, 0, 80, 80 };
     SDL_Rect Settings = { 1214, 0, 80, 80 };
@@ -317,13 +354,13 @@ int main(int argc, char** argv) {
 
 
     SDL_Rect choiceDifficultyLevel = { 0, 0, 1535, 800 };
-    SDL_Rect easy = {59, 229, 310,460};
-    SDL_Rect medium = {422, 229, 310, 460};
-    SDL_Rect hard = {784, 229, 310,460};
-    SDL_Rect veryHard = {1144, 229, 310, 460};
+    SDL_Rect easy = { 59, 229, 310,460 };
+    SDL_Rect medium = { 422, 229, 310, 460 };
+    SDL_Rect hard = { 784, 229, 310,460 };
+    SDL_Rect veryHard = { 1144, 229, 310, 460 };
 
     SDL_Rect choiceBonusGame = { 0, 0, 1535, 800 };
-    SDL_Rect yes = { 298, 315, 939,  100};
+    SDL_Rect yes = { 298, 315, 939,  100 };
     SDL_Rect no = { 298, 477, 939, 100 };
 
 
@@ -333,17 +370,17 @@ int main(int argc, char** argv) {
     SDL_Rect threeCube = { 862, 252, 60, 60 };
 
 
-    SDL_Rect three =     { 10, 431, 85, 60 };
-    SDL_Rect four =      { 105, 431, 85, 60 };
-    SDL_Rect five =      { 200, 431, 85, 60 };
-    SDL_Rect six =       { 295, 431, 85, 60 };
-    SDL_Rect seven =     { 390, 431, 85, 60 };
-    SDL_Rect eight =     { 485, 431, 85, 60 };
-    SDL_Rect nine =      { 580, 431, 85, 60 };
-    SDL_Rect ten =       { 675, 431, 85, 60 };
-    SDL_Rect eleven =    { 770, 431, 85, 60 };
-    SDL_Rect twelve =    { 865, 431, 85, 60 };
-    SDL_Rect thirteen =  { 960, 431, 85, 60 };
+    SDL_Rect three = { 10, 431, 85, 60 };
+    SDL_Rect four = { 105, 431, 85, 60 };
+    SDL_Rect five = { 200, 431, 85, 60 };
+    SDL_Rect six = { 295, 431, 85, 60 };
+    SDL_Rect seven = { 390, 431, 85, 60 };
+    SDL_Rect eight = { 485, 431, 85, 60 };
+    SDL_Rect nine = { 580, 431, 85, 60 };
+    SDL_Rect ten = { 675, 431, 85, 60 };
+    SDL_Rect eleven = { 770, 431, 85, 60 };
+    SDL_Rect twelve = { 865, 431, 85, 60 };
+    SDL_Rect thirteen = { 960, 431, 85, 60 };
     SDL_Rect fourteen = { 1055, 431, 85, 60 };
     SDL_Rect fifteen = { 1150, 431, 85, 60 };
     SDL_Rect sixteen = { 1245, 431, 85, 60 };
@@ -355,1749 +392,1983 @@ int main(int argc, char** argv) {
     SDL_Rect kub2 = { 714, 268, 100, 100 };
     SDL_Rect kub3 = { 838,268,100,100 };
 
+    SDL_Rect onFonMusic = { 28,411,717,100 };
+    SDL_Rect offFonMusic = { 28,536,717,100 };
+
+    SDL_Rect onMusEffects = { 790,406,717,100 };
+    SDL_Rect offMusEffects = { 790,531,717,100 };
+
+
+
     SDL_Event event;
     State currentState = MENU;
     bool quit = false;
+
     int x, y;
+
     int choiceMode = 0;
     int choiceDiffLevel = 0;
-    int try1=0, try2=0;
+
+    int try1 = 0, try2 = 0;
     int k1 = 0, k2[2] = { 0 }, k3[3] = { 0 };
+
     int choice_k = 0;
     int sum2 = 0;
 
+    int fonMusic = 1;
+    int musEffects = 1;
+
+    int players = 0;
+    int player = 1;
+
+    Mix_Init(0);
+    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+    if (fonMusic == 1) { loadmusic(); }
+    char music[10] = "music.wav";
     while (!quit)
     {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) { quit = true; }
-            switch (currentState) 
+            switch (currentState)
             {
-                case MENU:
-                    SDL_RenderCopy(renderer, fonTexture, NULL, NULL);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-                    {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {quit = true;}
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, startGame)) {
-                            currentState = CHOICE_GAME_MODE;
-                            break;
-                        }
-                        
+            case MENU:
+                SDL_RenderCopy(renderer, fonTexture, NULL, NULL);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, startGame)) {
+                        if (musEffects == 1) { sound(music); }
                     }
-                    if (event.type == SDL_MOUSEMOTION)
+                    if (isHit(x, y, Quit))
                     {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, startGame)) {
-                            draw(renderer, startGameTexture, startGame);
-                            break;
-                        }
-                        if (isHit(x, y, checkProgress)) {
-                            draw(renderer, checkProgressTexture, checkProgress);
-                            break;
-                        }
+                        quit = true;
                     }
-                    
-                    break;
-                case SETTINGS: break;
-                    //event.type == SDL_MOUSEBUTTONDOWN && 
-                case RULES: 
-                    SDL_RenderCopy(renderer, R1Texture, NULL, NULL);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if(isHit(x, y, Quit))
-                        {
-                            currentState = MENU; break;
-                        }
-                        if (isHit(x, y, Settings))
-                        {
-                            currentState = SETTINGS; break;
-                        }
-                        if (isHit(x, y, rightArrow))
-                        {
-                            currentState = RULES_2; break;
-                        }   
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION)
-                    {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, rightArrow)) {
-                            draw(renderer, rightArrowTexture, rightArrow); break;
-                        }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, startGame)) {
+                        currentState = CHOICE_GAME_MODE;
+                        break;
+                    }
 
+
+                }
+                if (event.type == SDL_MOUSEMOTION)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
                     }
-                    break;
-                case RULES_2:
-                    SDL_RenderCopy(renderer, R2Texture, NULL, NULL);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU; break;
-                        }
-                        if (isHit(x, y, Settings))
-                        {
-                            currentState = SETTINGS; break;
-                        }
-                        if (isHit(x, y, leftArrow))
-                        {
-                            currentState = RULES; break;
-                        }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION)
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, startGame)) {
+                        draw(renderer, startGameTexture, startGame);
+                        break;
+                    }
+                    if (isHit(x, y, checkProgress)) {
+                        draw(renderer, checkProgressTexture, checkProgress);
+                        break;
+                    }
+                }
+                break;
+            case SETTINGS:
+                draw(renderer, settingsTexture, bonusGame);
+                if (fonMusic == 1) { draw(renderer, onTexture, onFonMusic); }
+                else if (fonMusic == 0) { draw(renderer, offTexture, offFonMusic); }
+                if (musEffects == 1) { draw(renderer, onTexture, onMusEffects); }
+                else if (musEffects == 0) { draw(renderer, offTexture, offMusEffects); }
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Rules) || isHit(x, y, Quit) || isHit(x, y, onFonMusic) || isHit(x, y, offFonMusic) || isHit(x, y, onMusEffects) || isHit(x, y, offMusEffects)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit)) {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, onFonMusic)) {
+                        fonMusic = 1;
+                        if (fonMusic == 1) { loadmusic(); }
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, offFonMusic)) {
+                        fonMusic = 0;
+                        Mix_HaltMusic();
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, onMusEffects)) {
+                        musEffects = 1;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, offMusEffects)) {
+                        musEffects = 0;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                }
+                break;
+            case RULES:
+                SDL_RenderCopy(renderer, R1Texture, NULL, NULL);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, rightArrow) || isHit(x, y, Settings) || isHit(x, y, Quit)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
                     {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, leftArrow)) {
-                            draw(renderer, leftArrowTexture, leftArrow);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
+                        currentState = MENU; break;
                     }
-                    break;
-                case CHOICE_GAME_MODE:
-                    draw(renderer, choiceGameModeTexture, choiceGameMode);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+                    if (isHit(x, y, Settings))
                     {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, playerPlayer)) {
-                            currentState = CHOICE_DIFFICULTY_LEVEL;
-                            break;
-                        }
-                        if (isHit(x, y, playerComp)) {
-                            currentState = CHOICE_DIFFICULTY_LEVEL;
-                            break;
-                        }
+                        currentState = SETTINGS; break;
                     }
-                    if (event.type == SDL_MOUSEMOTION)
+                    if (isHit(x, y, rightArrow))
                     {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, playerPlayer)) {
-                            draw(renderer, PlayerPlayerTexture, playerPlayer);
-                            break;
-                        }
-                        if (isHit(x, y, playerComp)) {
-                            draw(renderer, PlayerCompTexture, playerComp);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
+                        currentState = RULES_2; break;
                     }
-                    break;
-                case CHOICE_DIFFICULTY_LEVEL:
-                    draw(renderer, choiceDifficultyLevelTexture, choiceDifficultyLevel);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+                }
+                if (event.type == SDL_MOUSEMOTION)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, rightArrow)) {
+                        draw(renderer, rightArrowTexture, rightArrow); break;
+                    }
+
+                }
+                break;
+            case RULES_2:
+                SDL_RenderCopy(renderer, R2Texture, NULL, NULL);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, leftArrow) || isHit(x, y, Settings) || isHit(x, y, Quit)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
                     {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, easy)) {
-                            //choiceDiffLevel = 1;
+                        currentState = MENU; break;
+                    }
+                    if (isHit(x, y, Settings))
+                    {
+                        currentState = SETTINGS; break;
+                    }
+                    if (isHit(x, y, leftArrow))
+                    {
+                        currentState = RULES; break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, leftArrow)) {
+                        draw(renderer, leftArrowTexture, leftArrow);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                }
+                break;
+            case CHOICE_GAME_MODE:
+                draw(renderer, choiceGameModeTexture, choiceGameMode);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Settings) || isHit(x, y, Rules) || isHit(x, y, playerPlayer) || isHit(x, y, playerComp)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, playerPlayer)) {
+                        players = 2;
+                        currentState = CHOICE_DIFFICULTY_LEVEL;
+                        break;
+                    }
+                    if (isHit(x, y, playerComp)) {
+                        players = 1;
+                        currentState = CHOICE_DIFFICULTY_LEVEL;
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, playerPlayer)) {
+                        draw(renderer, PlayerPlayerTexture, playerPlayer);
+                        break;
+                    }
+                    if (isHit(x, y, playerComp)) {
+                        draw(renderer, PlayerCompTexture, playerComp);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                }
+                break;
+            case CHOICE_DIFFICULTY_LEVEL:
+                draw(renderer, choiceDifficultyLevelTexture, choiceDifficultyLevel);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Settings) || isHit(x, y, Rules) || isHit(x, y, easy) || isHit(x, y, medium) || isHit(x, y, hard) || isHit(x, y, veryHard)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, easy)) {
+                        choiceDiffLevel = 1;
+                        if (players == 1) {
                             currentState = CHOICE_BONUS_GAME;
-                            break;
                         }
-                        if (isHit(x, y, medium)) {
-                            //choiceDiffLevel = 2;
-                            currentState = CHOICE_BONUS_GAME;
-                            break;
+                        else if (players == 2) {
+                            currentState = CHOICE_PLAYER1;
                         }
-                        if (isHit(x, y, hard)) {
-                            //choiceDiffLevel = 3;
-                            currentState = CHOICE_BONUS_GAME;
-                            break;
-                        }
-                        if (isHit(x, y, veryHard)) {
-                            //choiceDiffLevel = 4;
-                            currentState = CHOICE_BONUS_GAME;
-                            break;
-                        }
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION)
+                    if (isHit(x, y, medium)) {
+                        choiceDiffLevel = 2;
+                        if (players == 1) {
+                            currentState = CHOICE_BONUS_GAME;
+                        }
+                        else if (players == 2) {
+                            currentState = CHOICE_PLAYER1;
+                        }
+                        break;
+                    }
+                    if (isHit(x, y, hard)) {
+                        choiceDiffLevel = 3;
+                        if (players == 1) {
+                            currentState = CHOICE_BONUS_GAME;
+                        }
+                        else if (players == 2) {
+                            currentState = CHOICE_PLAYER1;
+                        }
+                        break;
+                    }
+                    if (isHit(x, y, veryHard)) {
+                        choiceDiffLevel = 4;
+                        if (players == 1) {
+                            currentState = CHOICE_BONUS_GAME;
+                        }
+                        else if (players == 2) {
+                            currentState = CHOICE_PLAYER1;
+                        }
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION)
+                {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, easy)) {
+                        draw(renderer, easyTexture, easy);
+                        break;
+                    }
+                    if (isHit(x, y, medium)) {
+                        draw(renderer, mediumTexture, medium);
+                        break;
+                    }
+                    if (isHit(x, y, hard)) {
+                        draw(renderer, hardTexture, hard);
+                        break;
+                    }
+                    if (isHit(x, y, veryHard)) {
+                        draw(renderer, veryHardTexture, veryHard);
+                        break;
+                    }
+                }
+                break;
+            case CHOICE_PLAYER1:
+                draw(renderer, choicePlayer1Texture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    currentState = CHOICE_BONUS_GAME;
+                }
+                break;
+            case CHOICE_PLAYER2:
+                draw(renderer, choicePlayer2Texture, bonusGame);
+                SDL_RenderPresent(renderer);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    currentState = CHOICE_BONUS_GAME;
+                }
+                break;
+            case CHOICE_BONUS_GAME:
+                draw(renderer, choiceBonusGameTexture, choiceBonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Settings) || isHit(x, y, Rules) || isHit(x, y, yes) || isHit(x, y, no)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
                     {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, easy)) {
-                            draw(renderer, easyTexture, easy);
-                            break;
-                        }
-                        if (isHit(x, y, medium)) {
-                            draw(renderer, mediumTexture, medium);
-                            break;
-                        }
-                        if (isHit(x, y, hard)) {
-                            draw(renderer, hardTexture, hard);
-                            break;
-                        }
-                        if (isHit(x, y, veryHard)) {
-                            draw(renderer, veryHardTexture, veryHard);
-                            break;
-                        }
+                        currentState = MENU;
+                        break;
                     }
-                    break;
-                case CHOICE_BONUS_GAME: 
-                    draw(renderer, choiceBonusGameTexture, choiceBonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, yes)) {
-                            currentState = BONUS_GAME;
-                            break;
-                        }
-                        if (isHit(x, y, no)) {
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, yes)) {
+                        currentState = BONUS_GAME;
+                        break;
+                    }
+                    if (isHit(x, y, no)) {
+                        if (players == 1) {
                             currentState = MAIN_GAME;
                         }
-                    }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, yes)) {
-                            draw(renderer, yesTexture, yes);
-                            break;
-                        }
-                        if (isHit(x, y, no)) {
-                            draw(renderer, noTexture, no);
-                            break;
-                        }
-                    }
-                    break;
-                case BONUS_GAME:
-                    draw(renderer, bonusGameTexture, bonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, oneCube)) {
-                            choice_k = 1;
-                            currentState = BONUS_GAME_1;
-                            break;
-                        }
-                        if (isHit(x, y, twoCube)) {
-                            choice_k = 2;
-                            currentState = BONUS_GAME_2;
-                            break;
-                        }
-                        if (isHit(x, y, threeCube)) {
-                            choice_k = 3;
-                            currentState = BONUS_GAME_3;
-                            break;
+                        if (players == 2) {
+                            if (player == 1) { player = 2; currentState = CHOICE_PLAYER2; break; }
+                            if (player == 2) {
+                                draw(renderer, welcomeMainGameTexture, bonusGame);
+                                SDL_RenderPresent(renderer);
+                                SDL_Delay(2000);
+                                currentState = MAIN_GAME;
+                                break;
+                            }
                         }
 
                     }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, oneCube)) {
-                            draw(renderer, oneCubeTexture, oneCube);
-                            break;
-                        }
-                        if (isHit(x, y, twoCube)) {
-                            draw(renderer, twoCubeTexture, twoCube);
-                            break;
-                        }
-                        if (isHit(x, y, threeCube)) {
-                            draw(renderer, threeCubeTexture, threeCube);
-                            break;
-                        }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
                     }
-                    break;
-                case BONUS_GAME_1:
-                    draw(renderer, bonusGame1Texture, bonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //это 1
-                            try1 = 1;
-                            currentState = BONUS_GAME_1_2;
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            //2
-                            try1 = 2;
-                            currentState = BONUS_GAME_1_2;
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            //3
-                            try1 = 3;
-                            currentState = BONUS_GAME_1_2;
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            //4
-                            try1 = 4;
-                            currentState = BONUS_GAME_1_2;
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            //5
-                            try1 = 5;
-                            currentState = BONUS_GAME_1_2;
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //6
-                            try1 = 6;
-                            currentState = BONUS_GAME_1_2;
-                            break;
-                        }
-                        
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //1
-                            draw(renderer, redNumberTexture, three);
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            //2
-                            draw(renderer, redNumberTexture, four);
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            //3
-                            draw(renderer, redNumberTexture, five);
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            //4
-                            draw(renderer, redNumberTexture, six);
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            //5
-                            draw(renderer, redNumberTexture, seven);
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //6
-                            draw(renderer, redNumberTexture, eight);
-                            break;
-                        }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
                     }
-                    break;
+                    if (isHit(x, y, yes)) {
+                        draw(renderer, yesTexture, yes);
+                        break;
+                    }
+                    if (isHit(x, y, no)) {
+                        draw(renderer, noTexture, no);
+                        break;
+                    }
+                }
+                break;
+            case BONUS_GAME:
+                draw(renderer, bonusGameTexture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, oneCube) || isHit(x, y, twoCube) || isHit(x, y, threeCube)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, oneCube)) {
+                        choice_k = 1;
+                        currentState = BONUS_GAME_1;
+                        break;
+                    }
+                    if (isHit(x, y, twoCube)) {
+                        choice_k = 2;
+                        currentState = BONUS_GAME_2;
+                        break;
+                    }
+                    if (isHit(x, y, threeCube)) {
+                        choice_k = 3;
+                        currentState = BONUS_GAME_3;
+                        break;
+                    }
 
-                case BONUS_GAME_1_2:
-                    draw(renderer, bonusGame1_2Texture, bonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //1
-                            try2 = 1;
-                            k1 = rand() % 6 + 1;
-                            if (try1 == k1 || try2 == k1)
-                            {
-                                currentState = BONUS_WIN;
-                            }
-                            else{ currentState = BONUS_LOSE; }
-                            
-                            //draw(renderer, redNumberTexture, three);
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            //2
-                            try2 = 2;
-                            k1 = rand() % 6 + 1;
-                            if (try1 == k1 || try2 == k1)
-                            {
-                                currentState = BONUS_WIN;
-                            }
-                            else { currentState = BONUS_LOSE; }
-                      
-                            //draw(renderer, redNumberTexture, four);
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            //3
-                            try2 = 3;
-                            k1 = rand() % 6 + 1;
-                            if (try1 == k1 || try2 == k1)
-                            {
-                                currentState = BONUS_WIN;
-                            }
-                            else { currentState = BONUS_LOSE; }
-                           
-                            //draw(renderer, redNumberTexture, five);
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            //4
-                            try2 = 4;
-                            k1 = rand() % 6 + 1;
-                            if (try1 == k1 || try2 == k1)
-                            {
-                                currentState = BONUS_WIN;
-                            }
-                            else { currentState = BONUS_LOSE; }
-                            //draw(renderer, redNumberTexture, six);
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            //5
-                            try2 = 5;
-                            k1 = rand() % 6 + 1;
-                            if (try1 == k1 || try2 == k1)
-                            {
-                                currentState = BONUS_WIN;
-                            }
-                            else { currentState = BONUS_LOSE; }
-                            //draw(renderer, redNumberTexture, seven);
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //6
-                            try2 = 6;
-                            k1 = rand() % 6 + 1;
-                            if (try1 == k1 || try2 == k1)
-                            {
-                                currentState = BONUS_WIN;
-                            }
-                            else { currentState = BONUS_LOSE; }
-                            //draw(renderer, redNumberTexture, eight);
-                            break;
-                        }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, oneCube)) {
+                        draw(renderer, oneCubeTexture, oneCube);
+                        break;
+                    }
+                    if (isHit(x, y, twoCube)) {
+                        draw(renderer, twoCubeTexture, twoCube);
+                        break;
+                    }
+                    if (isHit(x, y, threeCube)) {
+                        draw(renderer, threeCubeTexture, threeCube);
+                        break;
+                    }
+                }
+                break;
+            case BONUS_GAME_1:
+                draw(renderer, bonusGame1Texture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, three) || isHit(x, y, four) || isHit(x, y, five) ||
+                        isHit(x, y, six) || isHit(x, y, seven) || isHit(x, y, eight)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //это 1
+                        try1 = 1;
+                        currentState = BONUS_GAME_1_2;
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //2
+                        try1 = 2;
+                        currentState = BONUS_GAME_1_2;
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        //3
+                        try1 = 3;
+                        currentState = BONUS_GAME_1_2;
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        //4
+                        try1 = 4;
+                        currentState = BONUS_GAME_1_2;
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        //5
+                        try1 = 5;
+                        currentState = BONUS_GAME_1_2;
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //6
+                        try1 = 6;
+                        currentState = BONUS_GAME_1_2;
+                        break;
+                    }
 
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //1
-                            draw(renderer, redNumberTexture, three);
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            //2
-                            draw(renderer, redNumberTexture, four);
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //1
+                        draw(renderer, redNumberTexture, three);
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //2
+                        draw(renderer, redNumberTexture, four);
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        //3
+                        draw(renderer, redNumberTexture, five);
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        //4
+                        draw(renderer, redNumberTexture, six);
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        //5
+                        draw(renderer, redNumberTexture, seven);
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //6
+                        draw(renderer, redNumberTexture, eight);
+                        break;
+                    }
+                }
+                break;
 
-                            break;
-                        }
-                        if (isHit(x, y, five))
+            case BONUS_GAME_1_2:
+                draw(renderer, bonusGame1_2Texture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, three) || isHit(x, y, four) || isHit(x, y, five) ||
+                        isHit(x, y, six) || isHit(x, y, seven) || isHit(x, y, eight)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //1
+                        try2 = 1;
+                        k1 = rand() % 6 + 1;
+                        if (try1 == k1 || try2 == k1)
                         {
-                            //3
-                            draw(renderer, redNumberTexture, five);
+                            currentState = BONUS_WIN;
+                        }
+                        else { currentState = BONUS_LOSE; }
 
-                            break;
-                        }
-                        if (isHit(x, y, six))
+                        //draw(renderer, redNumberTexture, three);
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //2
+                        try2 = 2;
+                        k1 = rand() % 6 + 1;
+                        if (try1 == k1 || try2 == k1)
                         {
-                            //4
-                            draw(renderer, redNumberTexture, six);
-                            break;
+                            currentState = BONUS_WIN;
                         }
-                        if (isHit(x, y, seven))
-                        {
-                            //5
-                            draw(renderer, redNumberTexture, seven);
+                        else { currentState = BONUS_LOSE; }
 
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //6
-                            draw(renderer, redNumberTexture, eight);
-                            break;
-                        }
-                        
+                        //draw(renderer, redNumberTexture, four);
+                        break;
                     }
-                    break;
+                    if (isHit(x, y, five))
+                    {
+                        //3
+                        try2 = 3;
+                        k1 = rand() % 6 + 1;
+                        if (try1 == k1 || try2 == k1)
+                        {
+                            currentState = BONUS_WIN;
+                        }
+                        else { currentState = BONUS_LOSE; }
 
-                case BONUS_GAME_2:
-                    draw(renderer, bonusGame2Texture, bonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //2
-                            try1 = 2;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            //3
-                            try1 = 3;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            //4
-                            try1 = 4;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            //5
-                            try1 = 5;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            //6
-                            try1 = 6;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //7
-                            try1 = 7;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            //8
-                            try1 = 8;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            //9
-                            try1 = 9;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            //10
-                            try1 = 10;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            //11
-                            try1 = 11;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            //12
-                            try1 = 12;
-                            currentState = BONUS_GAME_2_2;
-                            break;
-                        }
-                        
+                        //draw(renderer, redNumberTexture, five);
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, three))
+                    if (isHit(x, y, six))
+                    {
+                        //4
+                        try2 = 4;
+                        k1 = rand() % 6 + 1;
+                        if (try1 == k1 || try2 == k1)
                         {
-                            //2
-                            draw(renderer, redNumberTexture, three);
-                            break;
+                            currentState = BONUS_WIN;
                         }
-                        if (isHit(x, y, four))
-                        {
-                            //3
-                            draw(renderer, redNumberTexture, four);
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            //4
-                            draw(renderer, redNumberTexture, five);
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            //5
-                            draw(renderer, redNumberTexture, six);
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            //6
-                            draw(renderer, redNumberTexture, seven);
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //7
-                            draw(renderer, redNumberTexture, eight);
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            //8
-                            draw(renderer, redNumberTexture, nine);
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            //9
-                            draw(renderer, redNumberTexture, ten);
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            //10
-                            draw(renderer, redNumberTexture, eleven);
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            //11
-                            draw(renderer, redNumberTexture, twelve);
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            //12
-                            draw(renderer, redNumberTexture, thirteen);
-                            break;
-                        }
+                        else { currentState = BONUS_LOSE; }
+                        //draw(renderer, redNumberTexture, six);
+                        break;
                     }
-                    break;
-                
-                case BONUS_GAME_2_2:
-                    draw(renderer, bonusGame2_2Texture, bonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
+                    if (isHit(x, y, seven))
+                    {
+                        //5
+                        try2 = 5;
+                        k1 = rand() % 6 + 1;
+                        if (try1 == k1 || try2 == k1)
                         {
-                            currentState = MENU;
-                            break;
+                            currentState = BONUS_WIN;
                         }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, three))
+                        else { currentState = BONUS_LOSE; }
+                        //draw(renderer, redNumberTexture, seven);
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //6
+                        try2 = 6;
+                        k1 = rand() % 6 + 1;
+                        if (try1 == k1 || try2 == k1)
                         {
-                            //2
-                            try2 = 2;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];   
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
+                            currentState = BONUS_WIN;
                         }
-                        if (isHit(x, y, four))
-                        {
-                            //3
-                            try2 = 3;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            //4
-                            try2 = 4;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            //5
-                            try2 = 5;
-                            int sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            //6
-                            try2 = 6;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //7
-                            try2 = 7;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            //8
-                            try2 = 8;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            //9
-                            try2 = 9;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            //10
-                            try2 = 10;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            //11
-                            try2 = 11;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            //12
-                            try2 = 12;
-                            sum2 = 0;
-                            for (int i = 0; i < 2; i++) {
-                                k2[i] = rand() % 6 + 1;
-                                sum2 += k2[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
+                        else { currentState = BONUS_LOSE; }
+                        //draw(renderer, redNumberTexture, eight);
+                        break;
+                    }
 
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //2
-                            draw(renderer, redNumberTexture, three);
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            //3
-                            draw(renderer, redNumberTexture, four);
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            //4
-                            draw(renderer, redNumberTexture, five);
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            //5
-                            draw(renderer, redNumberTexture, six);
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            //6
-                            draw(renderer, redNumberTexture, seven);
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            //7
-                            draw(renderer, redNumberTexture, eight);
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            //8
-                            draw(renderer, redNumberTexture, nine);
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            //9
-                            draw(renderer, redNumberTexture, ten);
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            //10
-                            draw(renderer, redNumberTexture, eleven);
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            //11
-                            draw(renderer, redNumberTexture, twelve);
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            //12
-                            draw(renderer, redNumberTexture, thirteen);
-                            break;
-                        }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
                     }
-                    break;
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //1
+                        draw(renderer, redNumberTexture, three);
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //2
+                        draw(renderer, redNumberTexture, four);
 
-                case BONUS_GAME_3:
-                    draw(renderer, bonusGame3Texture, bonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //как написано вверху, так и есть 
-                            try1 = 3;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            try1 = 4;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            try1 = 5;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            try1 = 6;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            try1 = 7;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            try1 = 8;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            try1 = 9;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            try1 = 10;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            try1 = 11;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            try1 = 12;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            try1 = 13;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, fourteen))
-                        {
-                            try1 = 14;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, fifteen))
-                        {
-                            try1 = 15;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, sixteen))
-                        {
-                            try1 = 16;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, seventeen))
-                        {
-                            try1 = 17;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
-                        if (isHit(x, y, eightteen))
-                        {
-                            try1 = 18;
-                            currentState = BONUS_GAME_3_2;
-                            break;
-                        }
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            draw(renderer, redNumberTexture, three);
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            draw(renderer, redNumberTexture, four);
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            draw(renderer, redNumberTexture, five);
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            draw(renderer, redNumberTexture, six);
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            draw(renderer, redNumberTexture, seven);
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            draw(renderer, redNumberTexture, eight);
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            draw(renderer, redNumberTexture, nine);
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            draw(renderer, redNumberTexture, ten);
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            draw(renderer, redNumberTexture, eleven);
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            draw(renderer, redNumberTexture, twelve);
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            draw(renderer, redNumberTexture, thirteen);
-                            break;
-                        }
-                        if (isHit(x, y, fourteen))
-                        {
-                            draw(renderer, redNumberTexture, fourteen);
-                            break;
-                        }
-                        if (isHit(x, y, fifteen))
-                        {
-                            draw(renderer, redNumberTexture, fifteen);
-                            break;
-                        }
-                        if (isHit(x, y, sixteen))
-                        {
-                            draw(renderer, redNumberTexture, sixteen);
-                            break;
-                        }
-                        if (isHit(x, y, seventeen))
-                        {
-                            draw(renderer, redNumberTexture, seventeen);
-                            break;
-                        }
-                        if (isHit(x, y, eightteen))
-                        {
-                            draw(renderer, redNumberTexture, eightteen);
-                            break;
-                        }
-                    }
-                    break;
+                    if (isHit(x, y, five))
+                    {
+                        //3
+                        draw(renderer, redNumberTexture, five);
 
-                case BONUS_GAME_3_2:
-                    draw(renderer, bonusGame3_2Texture, bonusGame);
-                    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit))
-                        {
-                            currentState = MENU;
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            currentState = RULES;
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            currentState = SETTINGS;
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            //как написано вверху, так и есть 
-                            try2 = 3;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            try2 = 4;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            try2 = 5;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            try2 = 6;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            try2 = 7;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                          
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            try2 = 8;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            try2 = 9;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            try2 = 10;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            try2 = 11;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            try2 = 12;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            try2 = 13;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, fourteen))
-                        {
-                            try2 = 14;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, fifteen))
-                        {
-                            try2 = 15;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, sixteen))
-                        {
-                            try2 = 16;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, seventeen))
-                        {
-                            try2 = 17;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
-                        if (isHit(x, y, eightteen))
-                        {
-                            try2 = 18;
-                            sum2 = 0;
-                            for (int i = 0; i < 3; i++) {
-                                k3[i] = rand() % 5 + 1;
-                                sum2 += k3[i];
-                            }
-                            if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
-                            else { currentState = BONUS_LOSE; }
-                            break;
-                        }
+                        break;
                     }
-                    if (event.type == SDL_MOUSEMOTION) {
-                        SDL_GetMouseState(&x, &y);
-                        if (isHit(x, y, Quit)) {
-                            draw(renderer, QuitTexture, Quit);
-                            break;
-                        }
-                        if (isHit(x, y, Settings)) {
-                            draw(renderer, NKTexture, Settings);
-                            break;
-                        }
-                        if (isHit(x, y, Rules)) {
-                            draw(renderer, RuleTexture, Rules);
-                            break;
-                        }
-                        if (isHit(x, y, three))
-                        {
-                            draw(renderer, redNumberTexture, three);
-                            break;
-                        }
-                        if (isHit(x, y, four))
-                        {
-                            draw(renderer, redNumberTexture, four);
-                            break;
-                        }
-                        if (isHit(x, y, five))
-                        {
-                            draw(renderer, redNumberTexture, five);
-                            break;
-                        }
-                        if (isHit(x, y, six))
-                        {
-                            draw(renderer, redNumberTexture, six);
-                            break;
-                        }
-                        if (isHit(x, y, seven))
-                        {
-                            draw(renderer, redNumberTexture, seven);
-                            break;
-                        }
-                        if (isHit(x, y, eight))
-                        {
-                            draw(renderer, redNumberTexture, eight);
-                            break;
-                        }
-                        if (isHit(x, y, nine))
-                        {
-                            draw(renderer, redNumberTexture, nine);
-                            break;
-                        }
-                        if (isHit(x, y, ten))
-                        {
-                            draw(renderer, redNumberTexture, ten);
-                            break;
-                        }
-                        if (isHit(x, y, eleven))
-                        {
-                            draw(renderer, redNumberTexture, eleven);
-                            break;
-                        }
-                        if (isHit(x, y, twelve))
-                        {
-                            draw(renderer, redNumberTexture, twelve);
-                            break;
-                        }
-                        if (isHit(x, y, thirteen))
-                        {
-                            draw(renderer, redNumberTexture, thirteen);
-                            break;
-                        }
-                        if (isHit(x, y, fourteen))
-                        {
-                            draw(renderer, redNumberTexture, fourteen);
-                            break;
-                        }
-                        if (isHit(x, y, fifteen))
-                        {
-                            draw(renderer, redNumberTexture, fifteen);
-                            break;
-                        }
-                        if (isHit(x, y, sixteen))
-                        {
-                            draw(renderer, redNumberTexture, sixteen);
-                            break;
-                        }
-                        if (isHit(x, y, seventeen))
-                        {
-                            draw(renderer, redNumberTexture, seventeen);
-                            break;
-                        }
-                        if (isHit(x, y, eightteen))
-                        {
-                            draw(renderer, redNumberTexture, eightteen);
-                            break;
-                        }
+                    if (isHit(x, y, six))
+                    {
+                        //4
+                        draw(renderer, redNumberTexture, six);
+                        break;
                     }
-                    break;
+                    if (isHit(x, y, seven))
+                    {
+                        //5
+                        draw(renderer, redNumberTexture, seven);
+
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //6
+                        draw(renderer, redNumberTexture, eight);
+                        break;
+                    }
+
+                }
+                break;
+
+            case BONUS_GAME_2:
+                draw(renderer, bonusGame2Texture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, three) || isHit(x, y, four) || isHit(x, y, five) ||
+                        isHit(x, y, six) || isHit(x, y, seven) || isHit(x, y, eight) || isHit(x, y, nine) || isHit(x, y, ten) || isHit(x, y, eleven) ||
+                        isHit(x, y, twelve) || isHit(x, y, thirteen)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //2
+                        try1 = 2;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //3
+                        try1 = 3;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        //4
+                        try1 = 4;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        //5
+                        try1 = 5;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        //6
+                        try1 = 6;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //7
+                        try1 = 7;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        //8
+                        try1 = 8;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        //9
+                        try1 = 9;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        //10
+                        try1 = 10;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        //11
+                        try1 = 11;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        //12
+                        try1 = 12;
+                        currentState = BONUS_GAME_2_2;
+                        break;
+                    }
+
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //2
+                        draw(renderer, redNumberTexture, three);
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //3
+                        draw(renderer, redNumberTexture, four);
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        //4
+                        draw(renderer, redNumberTexture, five);
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        //5
+                        draw(renderer, redNumberTexture, six);
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        //6
+                        draw(renderer, redNumberTexture, seven);
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //7
+                        draw(renderer, redNumberTexture, eight);
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        //8
+                        draw(renderer, redNumberTexture, nine);
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        //9
+                        draw(renderer, redNumberTexture, ten);
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        //10
+                        draw(renderer, redNumberTexture, eleven);
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        //11
+                        draw(renderer, redNumberTexture, twelve);
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        //12
+                        draw(renderer, redNumberTexture, thirteen);
+                        break;
+                    }
+                }
+                break;
+
+            case BONUS_GAME_2_2:
+                draw(renderer, bonusGame2_2Texture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, three) || isHit(x, y, four) || isHit(x, y, five) ||
+                        isHit(x, y, six) || isHit(x, y, seven) || isHit(x, y, eight) || isHit(x, y, nine) || isHit(x, y, ten) || isHit(x, y, eleven) ||
+                        isHit(x, y, twelve) || isHit(x, y, thirteen)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //2
+                        try2 = 2;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //3
+                        try2 = 3;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        //4
+                        try2 = 4;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        //5
+                        try2 = 5;
+                        int sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        //6
+                        try2 = 6;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //7
+                        try2 = 7;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        //8
+                        try2 = 8;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        //9
+                        try2 = 9;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        //10
+                        try2 = 10;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        //11
+                        try2 = 11;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        //12
+                        try2 = 12;
+                        sum2 = 0;
+                        for (int i = 0; i < 2; i++) {
+                            k2[i] = rand() % 6 + 1;
+                            sum2 += k2[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //2
+                        draw(renderer, redNumberTexture, three);
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        //3
+                        draw(renderer, redNumberTexture, four);
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        //4
+                        draw(renderer, redNumberTexture, five);
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        //5
+                        draw(renderer, redNumberTexture, six);
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        //6
+                        draw(renderer, redNumberTexture, seven);
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        //7
+                        draw(renderer, redNumberTexture, eight);
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        //8
+                        draw(renderer, redNumberTexture, nine);
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        //9
+                        draw(renderer, redNumberTexture, ten);
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        //10
+                        draw(renderer, redNumberTexture, eleven);
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        //11
+                        draw(renderer, redNumberTexture, twelve);
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        //12
+                        draw(renderer, redNumberTexture, thirteen);
+                        break;
+                    }
+                }
+                break;
+
+            case BONUS_GAME_3:
+                draw(renderer, bonusGame3Texture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, three) || isHit(x, y, four) || isHit(x, y, five) ||
+                        isHit(x, y, six) || isHit(x, y, seven) || isHit(x, y, eight) || isHit(x, y, nine) || isHit(x, y, ten) || isHit(x, y, eleven) ||
+                        isHit(x, y, twelve) || isHit(x, y, thirteen) || isHit(x, y, fourteen) || isHit(x, y, fifteen) || isHit(x, y, sixteen) ||
+                        isHit(x, y, seventeen) || isHit(x, y, eightteen)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //как написано вверху, так и есть 
+                        try1 = 3;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        try1 = 4;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        try1 = 5;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        try1 = 6;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        try1 = 7;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        try1 = 8;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        try1 = 9;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        try1 = 10;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        try1 = 11;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        try1 = 12;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        try1 = 13;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, fourteen))
+                    {
+                        try1 = 14;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, fifteen))
+                    {
+                        try1 = 15;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, sixteen))
+                    {
+                        try1 = 16;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, seventeen))
+                    {
+                        try1 = 17;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                    if (isHit(x, y, eightteen))
+                    {
+                        try1 = 18;
+                        currentState = BONUS_GAME_3_2;
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        draw(renderer, redNumberTexture, three);
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        draw(renderer, redNumberTexture, four);
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        draw(renderer, redNumberTexture, five);
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        draw(renderer, redNumberTexture, six);
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        draw(renderer, redNumberTexture, seven);
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        draw(renderer, redNumberTexture, eight);
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        draw(renderer, redNumberTexture, nine);
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        draw(renderer, redNumberTexture, ten);
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        draw(renderer, redNumberTexture, eleven);
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        draw(renderer, redNumberTexture, twelve);
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        draw(renderer, redNumberTexture, thirteen);
+                        break;
+                    }
+                    if (isHit(x, y, fourteen))
+                    {
+                        draw(renderer, redNumberTexture, fourteen);
+                        break;
+                    }
+                    if (isHit(x, y, fifteen))
+                    {
+                        draw(renderer, redNumberTexture, fifteen);
+                        break;
+                    }
+                    if (isHit(x, y, sixteen))
+                    {
+                        draw(renderer, redNumberTexture, sixteen);
+                        break;
+                    }
+                    if (isHit(x, y, seventeen))
+                    {
+                        draw(renderer, redNumberTexture, seventeen);
+                        break;
+                    }
+                    if (isHit(x, y, eightteen))
+                    {
+                        draw(renderer, redNumberTexture, eightteen);
+                        break;
+                    }
+                }
+                break;
+
+            case BONUS_GAME_3_2:
+                draw(renderer, bonusGame3_2Texture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit) || isHit(x, y, Rules) || isHit(x, y, Settings) || isHit(x, y, three) || isHit(x, y, four) || isHit(x, y, five) ||
+                        isHit(x, y, six) || isHit(x, y, seven) || isHit(x, y, eight) || isHit(x, y, nine) || isHit(x, y, ten) || isHit(x, y, eleven) ||
+                        isHit(x, y, twelve) || isHit(x, y, thirteen) || isHit(x, y, fourteen) || isHit(x, y, fifteen) || isHit(x, y, sixteen) ||
+                        isHit(x, y, seventeen) || isHit(x, y, eightteen)) {
+                        if (musEffects == 1) { sound(music); }
+                    }
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        //как написано вверху, так и есть 
+                        try2 = 3;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        try2 = 4;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        try2 = 5;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        try2 = 6;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        try2 = 7;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        try2 = 8;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        try2 = 9;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        try2 = 10;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        try2 = 11;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        try2 = 12;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        try2 = 13;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, fourteen))
+                    {
+                        try2 = 14;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, fifteen))
+                    {
+                        try2 = 15;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, sixteen))
+                    {
+                        try2 = 16;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, seventeen))
+                    {
+                        try2 = 17;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                    if (isHit(x, y, eightteen))
+                    {
+                        try2 = 18;
+                        sum2 = 0;
+                        for (int i = 0; i < 3; i++) {
+                            k3[i] = rand() % 5 + 1;
+                            sum2 += k3[i];
+                        }
+                        if (sum2 == try1 || sum2 == try2) { currentState = BONUS_WIN; }
+                        else { currentState = BONUS_LOSE; }
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, three))
+                    {
+                        draw(renderer, redNumberTexture, three);
+                        break;
+                    }
+                    if (isHit(x, y, four))
+                    {
+                        draw(renderer, redNumberTexture, four);
+                        break;
+                    }
+                    if (isHit(x, y, five))
+                    {
+                        draw(renderer, redNumberTexture, five);
+                        break;
+                    }
+                    if (isHit(x, y, six))
+                    {
+                        draw(renderer, redNumberTexture, six);
+                        break;
+                    }
+                    if (isHit(x, y, seven))
+                    {
+                        draw(renderer, redNumberTexture, seven);
+                        break;
+                    }
+                    if (isHit(x, y, eight))
+                    {
+                        draw(renderer, redNumberTexture, eight);
+                        break;
+                    }
+                    if (isHit(x, y, nine))
+                    {
+                        draw(renderer, redNumberTexture, nine);
+                        break;
+                    }
+                    if (isHit(x, y, ten))
+                    {
+                        draw(renderer, redNumberTexture, ten);
+                        break;
+                    }
+                    if (isHit(x, y, eleven))
+                    {
+                        draw(renderer, redNumberTexture, eleven);
+                        break;
+                    }
+                    if (isHit(x, y, twelve))
+                    {
+                        draw(renderer, redNumberTexture, twelve);
+                        break;
+                    }
+                    if (isHit(x, y, thirteen))
+                    {
+                        draw(renderer, redNumberTexture, thirteen);
+                        break;
+                    }
+                    if (isHit(x, y, fourteen))
+                    {
+                        draw(renderer, redNumberTexture, fourteen);
+                        break;
+                    }
+                    if (isHit(x, y, fifteen))
+                    {
+                        draw(renderer, redNumberTexture, fifteen);
+                        break;
+                    }
+                    if (isHit(x, y, sixteen))
+                    {
+                        draw(renderer, redNumberTexture, sixteen);
+                        break;
+                    }
+                    if (isHit(x, y, seventeen))
+                    {
+                        draw(renderer, redNumberTexture, seventeen);
+                        break;
+                    }
+                    if (isHit(x, y, eightteen))
+                    {
+                        draw(renderer, redNumberTexture, eightteen);
+                        break;
+                    }
+                }
+                break;
 
                 //Дописать переход из 2-х(вторых) попыток в следующие состояния, надо будет сделать функцию для рандома, чтобы понять
                 //угадал ли человек выбранное им число, в фунцию будем передавать нынешнее состояние и выбранное число 
                 //пусть фунция будет булева, если угадывает, то состояние поменяется на картинку с "вы угадали", если нет, то нет
 
-                case BONUS_WIN:
+            case BONUS_WIN:
+            {
+                draw(renderer, bonusWinTexture, bonusGame);
+                if (choice_k == 1) {
+                    _itoa_s(k1, text, 10);
+                    textTexture = get_text_texture(renderer, text, my_font);
+                    draw_text(renderer, textTexture, bonus_score);
+                    if (k1 == 1) { draw(renderer, point1Texture, kub2); }
+                    if (k1 == 2) { draw(renderer, point2Texture, kub2); }
+                    if (k1 == 3) { draw(renderer, point3Texture, kub2); }
+                    if (k1 == 4) { draw(renderer, point4Texture, kub2); }
+                    if (k1 == 5) { draw(renderer, point5Texture, kub2); }
+                    if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                }
+                if (choice_k == 2) {
+                    int sum = 0;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        sum += k2[i];
+                    }
+                    _itoa_s(sum, text, 10);
+                    textTexture = get_text_texture(renderer, text, my_font);
+                    draw_text(renderer, textTexture, bonus_score);
+                    //1 кубик
+                    if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
+                    if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
+                    if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
+                    if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
+                    if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
+                    if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
+                    //2 кубик
+                    if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
+                    if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
+                    if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
+                    if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
+                    if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
+                    if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
+                }
+                if (choice_k == 3) {
+                    int sum = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        sum += k3[i];
+                    }
+                    _itoa_s(sum, text, 10);
+                    textTexture = get_text_texture(renderer, text, my_font);
+                    draw_text(renderer, textTexture, bonus_score);
+                    if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
+                    if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
+                    if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
+                    if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
+                    if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
+                    if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
+
+
+                    if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
+                    if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
+                    if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
+                    if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
+                    if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
+                    if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
+
+
+                    if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
+                    if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
+                    if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
+                    if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
+                    if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
+                    if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
+                }
+                if (players == 1) {
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(3000);
+                    draw(renderer, welcomeMainGameTexture, bonusGame);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(2000);
+                    currentState = MAIN_GAME;
+                    break;
+                }
+                if (players == 2)
                 {
-                    draw(renderer, bonusWinTexture, bonusGame);
-                    if (choice_k == 1) {
-                        _itoa_s(k1, text, 10);
-                        textTexture = get_text_texture(renderer, text, my_font);
-                        draw_text(renderer, textTexture, bonus_score);
-                        if (k1 == 1) { draw(renderer, point1Texture, kub2); }
-                        if (k1 == 2) { draw(renderer, point2Texture, kub2); }
-                        if (k1 == 3) { draw(renderer, point3Texture, kub2); }
-                        if (k1 == 4) { draw(renderer, point4Texture, kub2); }
-                        if (k1 == 5) { draw(renderer, point5Texture, kub2); }
-                        if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                    if (player == 2) {
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(3000);
+                        draw(renderer, welcomeMainGameTexture, bonusGame);
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(2000);
+                        currentState = MAIN_GAME;
+                        break;
                     }
-                    if (choice_k == 2) {
-                        int sum = 0;
-                        for (int i = 0; i < 2; i++)
-                        {
-                            sum += k2[i];
-                        }
-                        _itoa_s(sum, text, 10);
-                        textTexture = get_text_texture(renderer, text, my_font);
-                        draw_text(renderer, textTexture, bonus_score);
-                        //1 кубик
-                        if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
-                        if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
-                        if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
-                        if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
-                        if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
-                        if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
-                        //2 кубик
-                        if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
-                        if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
-                        if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
-                        if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
-                        if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
-                        if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
-                    }
-                    if (choice_k == 3) {
-                        int sum = 0;
-                        for (int i = 0; i < 3; i++)
-                        {
-                            sum += k3[i];
-                        }
-                        _itoa_s(sum, text, 10);
-                        textTexture = get_text_texture(renderer, text, my_font);
-                        draw_text(renderer, textTexture, bonus_score);
-                        if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
-                        if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
-                        if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
-                        if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
-                        if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
-                        if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
-
-
-                        if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
-                        if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
-                        if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
-                        if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
-                        if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
-                        if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
-
-
-                        if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
-                        if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
-                        if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
-                        if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
-                        if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
-                        if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
-
-
+                    if (player == 1) {
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(3000);
+                        player = 2;
+                        currentState = CHOICE_PLAYER2;
+                        break;
                     }
                     break;
                 }
-                case BONUS_LOSE:
+
+                break;
+            }
+            case BONUS_LOSE:
+            {
+                draw(renderer, bonusLoseTexture, bonusGame);
+                if (choice_k == 1) {
+                    _itoa_s(k1, text, 10);
+                    textTexture = get_text_texture(renderer, text, my_font);
+                    draw_text(renderer, textTexture, bonus_score);
+                    if (k1 == 1) { draw(renderer, point1Texture, kub2); }
+                    if (k1 == 2) { draw(renderer, point2Texture, kub2); }
+                    if (k1 == 3) { draw(renderer, point3Texture, kub2); }
+                    if (k1 == 4) { draw(renderer, point4Texture, kub2); }
+                    if (k1 == 5) { draw(renderer, point5Texture, kub2); }
+                    if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                }
+                if (choice_k == 2) {
+                    int sum = 0;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        sum += k2[i];
+                    }
+                    _itoa_s(sum, text, 10);
+                    textTexture = get_text_texture(renderer, text, my_font);
+                    draw_text(renderer, textTexture, bonus_score);
+                    //1 кубик
+                    if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
+                    if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
+                    if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
+                    if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
+                    if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
+                    if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
+
+                    //2 кубик
+                    if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
+                    if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
+                    if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
+                    if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
+                    if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
+                    if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
+
+                }
+                if (choice_k == 3) {
+                    int sum = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        sum += k3[i];
+                    }
+                    _itoa_s(sum, text, 10);
+                    textTexture = get_text_texture(renderer, text, my_font);
+                    draw_text(renderer, textTexture, bonus_score);
+                    if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
+                    if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
+                    if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
+                    if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
+                    if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
+                    if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
+
+
+                    if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
+                    if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
+                    if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
+                    if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
+                    if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
+                    if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
+
+
+                    if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
+                    if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
+                    if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
+                    if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
+                    if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
+                    if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
+                }
+                if (players == 1) {
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(3000);
+                    draw(renderer, welcomeMainGameTexture, bonusGame);
+                    SDL_RenderPresent(renderer);
+                    SDL_Delay(2000);
+                    currentState = MAIN_GAME;
+                    break;
+                }
+                if (players == 2)
                 {
-                    draw(renderer, bonusLoseTexture, bonusGame);
-                    if (choice_k == 1) {
-                        _itoa_s(k1, text, 10);
-                        textTexture = get_text_texture(renderer, text, my_font);
-                        draw_text(renderer, textTexture, bonus_score);
-                        if (k1 == 1) { draw(renderer, point1Texture, kub2); }
-                        if (k1 == 2) { draw(renderer, point2Texture, kub2); }
-                        if (k1 == 3) { draw(renderer, point3Texture, kub2); }
-                        if (k1 == 4) { draw(renderer, point4Texture, kub2); }
-                        if (k1 == 5) { draw(renderer, point5Texture, kub2); }
-                        if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                    if (player == 2) {
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(3000);
+                        draw(renderer, welcomeMainGameTexture, bonusGame);
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(2000);
+                        currentState = MAIN_GAME;
+                        break;
                     }
-                    if (choice_k == 2) {
-                        int sum = 0;
-                        for (int i = 0; i < 2; i++)
-                        {
-                            sum += k2[i];
-                        }
-                        _itoa_s(sum, text, 10);
-                        textTexture = get_text_texture(renderer, text, my_font);
-                        draw_text(renderer, textTexture, bonus_score);
-                        //1 кубик
-                        if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
-                        if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
-                        if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
-                        if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
-                        if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
-                        if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
-
-                        //2 кубик
-                        if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
-                        if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
-                        if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
-                        if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
-                        if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
-                        if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
-
-                    }
-                    if (choice_k == 3) {
-                        int sum = 0;
-                        for (int i = 0; i < 3; i++)
-                        {
-                            sum += k3[i];
-                        }
-                        _itoa_s(sum, text, 10);
-                        textTexture = get_text_texture(renderer, text, my_font);
-                        draw_text(renderer, textTexture, bonus_score);
-                        if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
-                        if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
-                        if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
-                        if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
-                        if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
-                        if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
-
-
-                        if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
-                        if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
-                        if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
-                        if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
-                        if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
-                        if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
-
-
-                        if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
-                        if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
-                        if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
-                        if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
-                        if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
-                        if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
+                    if (player == 1) {
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(3000);
+                        player = 2;
+                        currentState = CHOICE_PLAYER2;
+                        break;
                     }
                     break;
                 }
-                case MAIN_GAME:
-                    break;
+
+                break;
+            }
+            case MAIN_GAME:
+                draw(renderer, mainGameTexture, bonusGame);
+                break;
 
             }
         }
