@@ -39,6 +39,14 @@ enum State {
     BONUS_WIN,
     BONUS_LOSE,
     MAIN_GAME,
+    COMBINATIONS,
+    RAFFLE1,
+    RAFFLE2,
+    BROSOK,
+    PLAYER1,
+    PLAYER2,
+    HOD1,
+    HOD2,
     EXIT,
     SETTINGS,
     RULES,
@@ -69,8 +77,332 @@ void draw(SDL_Renderer*& renderer, SDL_Texture* texture, SDL_Rect rect)
     SDL_RenderCopy(renderer, texture, NULL, &rect);
 }
 
+//бросаем 5 кубиков
+int kub5(int k5[5]) {
+    int sum = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 5; i++) {
+        if (k5[i] == 1) { ++cnt1; }
+        else if (k5[i] == 2) { cnt2++; }
+        else if (k5[i] == 3) { cnt3++; }
+        else if (k5[i] == 4) { cnt4++; }
+        else if (k5[i] == 5) { cnt5++; }
+        else if (k5[i] == 6) { cnt6++; }
+    }
+    if (k5[0] == 1 && k5[1] == 2 && k5[2] == 3 && k5[3] == 4 && k5[4] == 5) { sum += 100; printf("\nSTRIT-1\n"); }
+    else if (k5[0] == 2 && k5[1] == 3 && k5[2] == 4 && k5[3] == 5 && k5[4] == 6) { sum += 200; printf("\nSTRIT-2\n"); }
+    else {
+        if (cnt1 < 3) { sum += cnt1 * 10; }
+        if (cnt5 < 3) { sum += cnt5 * 5; }
+        //1
+        if (cnt1 == 3) {
+            sum += 10 * 10;
+        }
+        if (cnt1 == 4) {
+            sum += 10 * 20;
+        }
+        if (cnt1 == 5) {
+            sum += 10 * 100;
+        }
+        //2
+        if (cnt2 == 3) {
+            sum += 2 * 10;
+        }
+        if (cnt2 == 4) {
+            sum += 2 * 20;
+        }
+        if (cnt2 == 5) {
+            sum += 2 * 100;
+        }
+        //3
+        if (cnt3 == 3) {
+            sum += 3 * 10;
+        }
+        if (cnt3 == 4) {
+            sum += 3 * 20;
+        }
+        if (cnt3 == 5) {
+            sum += 3 * 100;
+        }
+        //4
+        if (cnt4 == 3) {
+            sum += 4 * 10;
+        }
+        if (cnt4 == 4) {
+            sum += 4 * 20;
+        }
+        if (cnt4 == 5) {
+            sum += 4 * 100;
+        }
+        //5
+        if (cnt5 == 3) {
+            sum += 5 * 10;
+        }
+        if (cnt5 == 4) {
+            sum += 5 * 20;
+        }
+        if (cnt5 == 5) {
+            sum += 5 * 100;
+        }
+        //6
+        if (cnt6 == 3) {
+            sum += 6 * 10;
+        }
+        if (cnt6 == 4) {
+            sum += 6 * 20;
+        }
+        if (cnt6 == 5) {
+            sum += 6 * 100;
+        }
+    }
+    return sum;
+}
+//бросаем 4 кубика
+int kub4(int k4[4]) {
+    int sum = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 4; i++) {
+        if (k4[i] == 1) { ++cnt1; }
+        else if (k4[i] == 2) { cnt2++; }
+        else if (k4[i] == 3) { cnt3++; }
+        else if (k4[i] == 4) { cnt4++; }
+        else if (k4[i] == 5) { cnt5++; }
+        else if (k4[i] == 6) { cnt6++; }
+    }
+    if (cnt1 < 3) { sum += cnt1 * 10; }
+    if (cnt5 < 3) { sum += cnt5 * 5; }
+    //1
+    if (cnt1 == 3) {
+        sum += 10 * 10;
+    }
+    if (cnt1 == 4) {
+        sum += 10 * 20;
+    }
+    //2
+    if (cnt2 == 3) {
+        sum += 2 * 10;
+    }
+    if (cnt2 == 4) {
+        sum += 2 * 20;
+    }
+    //3
+    if (cnt3 == 3) {
+        sum += 3 * 10;
+    }
+    if (cnt3 == 4) {
+        sum += 3 * 20;
+    }
+    //4
+    if (cnt4 == 3) {
+        sum += 4 * 10;
+    }
+    if (cnt4 == 4) {
+        sum += 4 * 20;
+    }
+    //5
+    if (cnt5 == 3) {
+        sum += 5 * 10;
+    }
+    if (cnt5 == 4) {
+        sum += 5 * 20;
+    }
+    //6
+    if (cnt6 == 3) {
+        sum += 6 * 10;
+    }
+    if (cnt6 == 4) {
+        sum += 6 * 20;
+    }
+    return sum;
+}
+//бросаем 3 кубика
+int kub3(int k3[3]) {
+    int sum = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 3; i++) {
+        if (k3[i] == 1) { ++cnt1; }
+        else if (k3[i] == 2) { cnt2++; }
+        else if (k3[i] == 3) { cnt3++; }
+        else if (k3[i] == 4) { cnt4++; }
+        else if (k3[i] == 5) { cnt5++; }
+        else if (k3[i] == 6) { cnt6++; }
+    }
+    if (cnt1 < 3) { sum += cnt1 * 10; }
+    if (cnt5 < 3) { sum += cnt5 * 5; }
+    //1
+    if (cnt1 == 3) {
+        sum += 10 * 10;
+    }
+    //2
+    if (cnt2 == 3) {
+        sum += 2 * 10;
+    }
+    //3
+    if (cnt3 == 3) {
+        sum += 3 * 10;
+    }
+    //4
+    if (cnt4 == 3) {
+        sum += 4 * 10;
+    }
+    //5
+    if (cnt5 == 3) {
+        sum += 5 * 10;
+    }
+    //6
+    if (cnt6 == 3) {
+        sum += 6 * 10;
+    }
+    return sum;
+}
+//бросаем 2 кубика
+int kub2(int k2[2]) {
+    int sum = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 2; i++) {
+        if (k2[i] == 1) { ++cnt1; }
+        else if (k2[i] == 2) { cnt2++; }
+        else if (k2[i] == 3) { cnt3++; }
+        else if (k2[i] == 4) { cnt4++; }
+        else if (k2[i] == 5) { cnt5++; }
+        else if (k2[i] == 6) { cnt6++; }
+    }
+    sum += cnt1 * 10;
+    sum += cnt5 * 5;
+    return sum;
+}
+//бросаем 1 кубик
+int kub1(int k1) {
+    int sum = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    if (k1 == 1) { ++cnt1; }
+    else if (k1 == 2) { cnt2++; }
+    else if (k1 == 3) { cnt3++; }
+    else if (k1 == 4) { cnt4++; }
+    else if (k1 == 5) { cnt5++; }
+    else if (k1 == 6) { cnt6++; }
+    sum += cnt1 * 10;
+    sum += cnt5 * 5;
+    return sum;
+}
+
+//СЧИТАЕМ ИСПОЛЬЗОВАННЫЕ ИЗ 5 КУБИКИ
+int cnt_kub5(int k5[5]) {
+    int cnt = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 5; i++) {
+        if (k5[i] == 1) { cnt1++; }
+        else if (k5[i] == 2) { cnt2++; }
+        else if (k5[i] == 3) { cnt3++; }
+        else if (k5[i] == 4) { cnt4++; }
+        else if (k5[i] == 5) { cnt5++; }
+        else if (k5[i] == 6) { cnt6++; }
+    }
+    if (k5[0] == 1 && k5[1] == 2 && k5[2] == 3 && k5[3] == 4 && k5[4] == 5) { cnt = 5; }
+    else if (k5[0] == 2 && k5[1] == 3 && k5[2] == 4 && k5[3] == 5 && k5[4] == 6) { cnt = 5; }
+    else {
+        if (cnt1 < 3) { cnt += cnt1; }
+        if (cnt5 < 3) { cnt += cnt5; }
+        if (cnt1 == 3 || cnt2 == 3 || cnt3 == 3 || cnt4 == 3 || cnt5 == 3 || cnt6 == 3) {
+            cnt += 3;
+        }
+        if (cnt1 == 4 || cnt2 == 4 || cnt3 == 4 || cnt4 == 4 || cnt5 == 4 || cnt6 == 4) {
+            cnt += 4;
+        }
+        if (cnt1 == 5 || cnt2 == 5 || cnt3 == 5 || cnt4 == 5 || cnt5 == 5 || cnt6 == 5) {
+            cnt += 5;
+        }
+    }
+    return 5 - cnt;
+}
+//СЧИТАЕМ ИСПОЛЬЗОВАННЫЕ ИЗ 4 КУБИКИ
+int cnt_kub4(int k4[4]) {
+    int cnt = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 4; i++) {
+        if (k4[i] == 1) { cnt1++; }
+        else if (k4[i] == 2) { cnt2++; }
+        else if (k4[i] == 3) { cnt3++; }
+        else if (k4[i] == 4) { cnt4++; }
+        else if (k4[i] == 5) { cnt5++; }
+        else if (k4[i] == 6) { cnt6++; }
+    }
+    if (cnt1 < 3) { cnt += cnt1; }
+    if (cnt5 < 3) { cnt += cnt5; }
+    if (cnt1 == 3 || cnt2 == 3 || cnt3 == 3 || cnt4 == 3 || cnt5 == 3 || cnt6 == 3) {
+        cnt += 3;
+    }
+    if (cnt1 == 4 || cnt2 == 4 || cnt3 == 4 || cnt4 == 4 || cnt5 == 4 || cnt6 == 4) {
+        cnt += 4;
+    }
+    return 4 - cnt;
+}
+//СЧИТАЕМ ИСПОЛЬЗОВАННЫЕ ИЗ 3 КУБИКИ
+int cnt_kub3(int k3[3]) {
+    int cnt = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 3; i++) {
+        if (k3[i] == 1) { cnt1++; }
+        else if (k3[i] == 2) { cnt2++; }
+        else if (k3[i] == 3) { cnt3++; }
+        else if (k3[i] == 4) { cnt4++; }
+        else if (k3[i] == 5) { cnt5++; }
+        else if (k3[i] == 6) { cnt6++; }
+    }
+    if (cnt1 < 3) { cnt += cnt1; }
+    if (cnt5 < 3) { cnt += cnt5; }
+    if (cnt1 == 3 || cnt2 == 3 || cnt3 == 3 || cnt4 == 3 || cnt5 == 3 || cnt6 == 3) {
+        cnt += 3;
+    }
+    return 3 - cnt;
+}
+//СЧИТАЕМ ИСПОЛЬЗОВАННЫЕ ИЗ 2 КУБИКИ
+int cnt_kub2(int k2[2]) {
+    int cnt = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    for (int i = 0; i < 2; i++) {
+        if (k2[i] == 1) { ++cnt1; }
+        else if (k2[i] == 2) { cnt2++; }
+        else if (k2[i] == 3) { cnt3++; }
+        else if (k2[i] == 4) { cnt4++; }
+        else if (k2[i] == 5) { cnt5++; }
+        else if (k2[i] == 6) { cnt6++; }
+    }
+    cnt += cnt1;
+    cnt += cnt5;
+    return 2 - cnt;
+}
+//СЧИТАЕМ ИСПОЛЬЗОВАННЫЕ ИЗ 1 КУБИКИ
+int cnt_kub1(int k1) {
+    int cnt = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+
+    if (k1 == 1) { ++cnt1; }
+    else if (k1 == 2) { cnt2++; }
+    else if (k1 == 3) { cnt3++; }
+    else if (k1 == 4) { cnt4++; }
+    else if (k1 == 5) { cnt5++; }
+    else if (k1 == 6) { cnt6++; }
+
+    cnt += cnt1;
+    cnt += cnt5;
+    return 1 - cnt;
+}
+
+enum step {
+    player1,
+    player2,
+};
+enum brosok1 {
+    kubik1,
+    kubik2,
+    kubik3,
+    kubik4,
+    kubik5,
+};
 int main(int argc, char** argv) {
     srand(time(NULL));
+    setlocale(LC_ALL, "Rus");
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
@@ -333,10 +665,65 @@ int main(int argc, char** argv) {
     SDL_Texture* welcomeMainGameTexture = SDL_CreateTextureFromSurface(renderer, welcomeMainGameImage);
     SDL_FreeSurface(welcomeMainGameImage);
 
-    SDL_Surface* mainGameImage = IMG_Load("mainGame.bmp"); //окно выбора второго игрока
+    SDL_Surface* mainGameImage = IMG_Load("mainGame.bmp"); //главная игры 
     SDL_SetColorKey(mainGameImage, SDL_TRUE, SDL_MapRGB(mainGameImage->format, 255, 255, 255));
     SDL_Texture* mainGameTexture = SDL_CreateTextureFromSurface(renderer, mainGameImage);
     SDL_FreeSurface(mainGameImage);
+
+    SDL_Surface* mainStopImage = IMG_Load("mainStop.bmp"); //кубики остановились 
+    SDL_SetColorKey(mainStopImage, SDL_TRUE, SDL_MapRGB(mainStopImage->format, 255, 255, 255));
+    SDL_Texture* mainStopTexture = SDL_CreateTextureFromSurface(renderer, mainStopImage);
+    SDL_FreeSurface(mainStopImage);
+
+    SDL_Surface* mainRecordImage = IMG_Load("mainRecord.bmp"); //результат записался
+    SDL_SetColorKey(mainRecordImage, SDL_TRUE, SDL_MapRGB(mainRecordImage->format, 255, 255, 255));
+    SDL_Texture* mainRecordTexture = SDL_CreateTextureFromSurface(renderer, mainRecordImage);
+    SDL_FreeSurface(mainRecordImage);
+
+    SDL_Surface* combinationImage = IMG_Load("combination.bmp"); //кнопка комбинаций
+    SDL_SetColorKey(combinationImage, SDL_TRUE, SDL_MapRGB(combinationImage->format, 255, 255, 255));
+    SDL_Texture* combinationTexture = SDL_CreateTextureFromSurface(renderer, combinationImage);
+    SDL_FreeSurface(combinationImage);
+
+    SDL_Surface* combinationsImage = IMG_Load("combinations.bmp"); //окно комбинаций
+    SDL_SetColorKey(combinationsImage, SDL_TRUE, SDL_MapRGB(combinationsImage->format, 255, 255, 255));
+    SDL_Texture* combinationsTexture = SDL_CreateTextureFromSurface(renderer, combinationsImage);
+    SDL_FreeSurface(combinationsImage);
+
+    SDL_Surface* throwImage = IMG_Load("throw.bmp"); //окно комбинаций
+    SDL_SetColorKey(throwImage, SDL_TRUE, SDL_MapRGB(throwImage->format, 255, 255, 255));
+    SDL_Texture* throwTexture = SDL_CreateTextureFromSurface(renderer, throwImage);
+    SDL_FreeSurface(throwImage);
+
+    SDL_Surface* stopImage = IMG_Load("stop.bmp"); //окно комбинаций
+    SDL_SetColorKey(stopImage, SDL_TRUE, SDL_MapRGB(stopImage->format, 255, 255, 255));
+    SDL_Texture* stopTexture = SDL_CreateTextureFromSurface(renderer, stopImage);
+    SDL_FreeSurface(stopImage);
+
+    SDL_Surface* recordImage = IMG_Load("record.bmp"); //окно комбинаций
+    SDL_SetColorKey(recordImage, SDL_TRUE, SDL_MapRGB(recordImage->format, 255, 255, 255));
+    SDL_Texture* recordTexture = SDL_CreateTextureFromSurface(renderer, recordImage);
+    SDL_FreeSurface(recordImage);
+
+    SDL_Surface* firstPlayerImage = IMG_Load("firstPlayer.bmp"); // игрок 1 
+    SDL_SetColorKey(firstPlayerImage, SDL_TRUE, SDL_MapRGB(firstPlayerImage->format, 255, 255, 255));
+    SDL_Texture* firstPlayerTexture = SDL_CreateTextureFromSurface(renderer, firstPlayerImage);
+    SDL_FreeSurface(firstPlayerImage);
+
+    SDL_Surface* secondPlayerImage = IMG_Load("secondPlayer.bmp"); // игрок 2
+    SDL_SetColorKey(secondPlayerImage, SDL_TRUE, SDL_MapRGB(secondPlayerImage->format, 255, 255, 255));
+    SDL_Texture* secondPlayerTexture = SDL_CreateTextureFromSurface(renderer, secondPlayerImage);
+    SDL_FreeSurface(secondPlayerImage);
+
+    SDL_Surface* raffle1Image = IMG_Load("raffle1.bmp"); // розыгрыш 1
+    SDL_SetColorKey(raffle1Image, SDL_TRUE, SDL_MapRGB(raffle1Image->format, 255, 255, 255));
+    SDL_Texture* raffle1Texture = SDL_CreateTextureFromSurface(renderer, raffle1Image);
+    SDL_FreeSurface(raffle1Image);
+
+    SDL_Surface* raffle2Image = IMG_Load("raffle2.bmp"); // розыгрыш 2
+    SDL_SetColorKey(raffle2Image, SDL_TRUE, SDL_MapRGB(raffle2Image->format, 255, 255, 255));
+    SDL_Texture* raffle2Texture = SDL_CreateTextureFromSurface(renderer, raffle2Image);
+    SDL_FreeSurface(raffle2Image);
 
     //   МЕСТОПОЛОЖЕНИE КНОПОК     ///    
     SDL_Rect Quit = { 1054, 0, 80, 80 };
@@ -388,9 +775,9 @@ int main(int argc, char** argv) {
     SDL_Rect eightteen = { 1435, 431, 85, 60 };
 
     SDL_Rect bonus_score = { 848, 423, 70, 70 };
-    SDL_Rect kub1 = { 590,268,100,100 };
-    SDL_Rect kub2 = { 714, 268, 100, 100 };
-    SDL_Rect kub3 = { 838,268,100,100 };
+    SDL_Rect kube1 = { 590,268,100,100 };
+    SDL_Rect kube2 = { 714, 268, 100, 100 };
+    SDL_Rect kube3 = { 838,268,100,100 };
 
     SDL_Rect onFonMusic = { 28,411,717,100 };
     SDL_Rect offFonMusic = { 28,536,717,100 };
@@ -398,10 +785,27 @@ int main(int argc, char** argv) {
     SDL_Rect onMusEffects = { 790,406,717,100 };
     SDL_Rect offMusEffects = { 790,531,717,100 };
 
+    SDL_Rect scorePlayer1 = { 107, 259, 206, 73 };
+    SDL_Rect scorePlayer2 = { 1224, 259, 206, 73 };
+    SDL_Rect droppedScore = { 671, 505, 206, 73 };
+    SDL_Rect combinationsReference = { 894, 0 , 80, 80 };
+
+    SDL_Rect brosok = { 624, 432, 300, 73 };
+    SDL_Rect stop = { 624, 432, 300, 73 };
+
+    SDL_Rect cube1 = { 471, 282, 100, 100 };
+    SDL_Rect cube2 = { 595, 282, 100, 100 };
+    SDL_Rect cube3 = { 719, 282, 100, 100 };
+    SDL_Rect cube4 = { 843, 282, 100, 100 };
+    SDL_Rect cube5 = { 967, 282, 100, 100 };
+
+    SDL_Rect player1 = { 60, 106, 300, 50 };
+    SDL_Rect player2 = { 1178, 106, 300, 50 };
 
 
     SDL_Event event;
     State currentState = MENU;
+    State currentPrev = MENU;
     bool quit = false;
 
     int x, y;
@@ -420,6 +824,20 @@ int main(int argc, char** argv) {
 
     int players = 0;
     int player = 1;
+    int score1 = 0, score2 = 0;
+
+    int raffle1 = 0, raffle2 = 0;
+    int firstPlayer = 1;
+
+    int tmpSum = 0;
+
+    int begin_game = 0;
+    
+    int SCORE1 = 0, SCORE2 = 0;
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+    int step1 = 1, step2 = 1;
+    int min_summ = 50;
+    int choice = 0;
 
     Mix_Init(0);
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
@@ -495,7 +913,10 @@ int main(int argc, char** argv) {
                         if (musEffects == 1) { sound(music); }
                     }
                     if (isHit(x, y, Quit)) {
-                        currentState = MENU;
+                        if (currentPrev == MAIN_GAME) {
+                            currentState = MAIN_GAME;
+                        }
+                        else { currentState = MENU; }
                         break;
                     }
                     if (isHit(x, y, Rules)) {
@@ -546,7 +967,10 @@ int main(int argc, char** argv) {
                     }
                     if (isHit(x, y, Quit))
                     {
-                        currentState = MENU; break;
+                        if (currentPrev == MAIN_GAME) {
+                            currentState = MAIN_GAME;
+                        }
+                        else { currentState = MENU; } break;
                     }
                     if (isHit(x, y, Settings))
                     {
@@ -583,7 +1007,10 @@ int main(int argc, char** argv) {
                     }
                     if (isHit(x, y, Quit))
                     {
-                        currentState = MENU; break;
+                        if (currentPrev == MAIN_GAME) {
+                            currentState = MAIN_GAME;
+                        }
+                        else { currentState = MENU; } break;
                     }
                     if (isHit(x, y, Settings))
                     {
@@ -814,11 +1241,10 @@ int main(int argc, char** argv) {
                                 draw(renderer, welcomeMainGameTexture, bonusGame);
                                 SDL_RenderPresent(renderer);
                                 SDL_Delay(2000);
-                                currentState = MAIN_GAME;
+                                currentState = RAFFLE1;
                                 break;
                             }
                         }
-
                     }
                 }
                 if (event.type == SDL_MOUSEMOTION) {
@@ -2156,10 +2582,6 @@ int main(int argc, char** argv) {
                 }
                 break;
 
-                //Дописать переход из 2-х(вторых) попыток в следующие состояния, надо будет сделать функцию для рандома, чтобы понять
-                //угадал ли человек выбранное им число, в фунцию будем передавать нынешнее состояние и выбранное число 
-                //пусть фунция будет булева, если угадывает, то состояние поменяется на картинку с "вы угадали", если нет, то нет
-
             case BONUS_WIN:
             {
                 draw(renderer, bonusWinTexture, bonusGame);
@@ -2167,12 +2589,12 @@ int main(int argc, char** argv) {
                     _itoa_s(k1, text, 10);
                     textTexture = get_text_texture(renderer, text, my_font);
                     draw_text(renderer, textTexture, bonus_score);
-                    if (k1 == 1) { draw(renderer, point1Texture, kub2); }
-                    if (k1 == 2) { draw(renderer, point2Texture, kub2); }
-                    if (k1 == 3) { draw(renderer, point3Texture, kub2); }
-                    if (k1 == 4) { draw(renderer, point4Texture, kub2); }
-                    if (k1 == 5) { draw(renderer, point5Texture, kub2); }
-                    if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                    if (k1 == 1) { draw(renderer, point1Texture, kube2); }
+                    if (k1 == 2) { draw(renderer, point2Texture, kube2); }
+                    if (k1 == 3) { draw(renderer, point3Texture, kube2); }
+                    if (k1 == 4) { draw(renderer, point4Texture, kube2); }
+                    if (k1 == 5) { draw(renderer, point5Texture, kube2); }
+                    if (k1 == 6) { draw(renderer, point6Texture, kube2); }
                 }
                 if (choice_k == 2) {
                     int sum = 0;
@@ -2184,19 +2606,19 @@ int main(int argc, char** argv) {
                     textTexture = get_text_texture(renderer, text, my_font);
                     draw_text(renderer, textTexture, bonus_score);
                     //1 кубик
-                    if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
-                    if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
-                    if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
-                    if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
-                    if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
-                    if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
+                    if (k2[0] == 1) { draw(renderer, point1Texture, kube1); }
+                    if (k2[0] == 2) { draw(renderer, point2Texture, kube1); }
+                    if (k2[0] == 3) { draw(renderer, point3Texture, kube1); }
+                    if (k2[0] == 4) { draw(renderer, point4Texture, kube1); }
+                    if (k2[0] == 5) { draw(renderer, point5Texture, kube1); }
+                    if (k2[0] == 6) { draw(renderer, point6Texture, kube1); }
                     //2 кубик
-                    if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
-                    if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
-                    if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
-                    if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
-                    if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
-                    if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
+                    if (k2[1] == 1) { draw(renderer, point1Texture, kube2); }
+                    if (k2[1] == 2) { draw(renderer, point2Texture, kube2); }
+                    if (k2[1] == 3) { draw(renderer, point3Texture, kube2); }
+                    if (k2[1] == 4) { draw(renderer, point4Texture, kube2); }
+                    if (k2[1] == 5) { draw(renderer, point5Texture, kube2); }
+                    if (k2[1] == 6) { draw(renderer, point6Texture, kube2); }
                 }
                 if (choice_k == 3) {
                     int sum = 0;
@@ -2207,30 +2629,31 @@ int main(int argc, char** argv) {
                     _itoa_s(sum, text, 10);
                     textTexture = get_text_texture(renderer, text, my_font);
                     draw_text(renderer, textTexture, bonus_score);
-                    if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
-                    if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
-                    if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
-                    if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
-                    if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
-                    if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
+                    if (k3[0] == 1) { draw(renderer, point1Texture, kube1); }
+                    if (k3[0] == 2) { draw(renderer, point2Texture, kube1); }
+                    if (k3[0] == 3) { draw(renderer, point3Texture, kube1); }
+                    if (k3[0] == 4) { draw(renderer, point4Texture, kube1); }
+                    if (k3[0] == 5) { draw(renderer, point5Texture, kube1); }
+                    if (k3[0] == 6) { draw(renderer, point6Texture, kube1); }
 
 
-                    if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
-                    if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
-                    if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
-                    if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
-                    if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
-                    if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
+                    if (k3[1] == 1) { draw(renderer, point1Texture, kube2); }
+                    if (k3[1] == 2) { draw(renderer, point2Texture, kube2); }
+                    if (k3[1] == 3) { draw(renderer, point3Texture, kube2); }
+                    if (k3[1] == 4) { draw(renderer, point4Texture, kube2); }
+                    if (k3[1] == 5) { draw(renderer, point5Texture, kube2); }
+                    if (k3[1] == 6) { draw(renderer, point6Texture, kube2); }
 
 
-                    if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
-                    if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
-                    if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
-                    if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
-                    if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
-                    if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
+                    if (k3[2] == 1) { draw(renderer, point1Texture, kube3); }
+                    if (k3[2] == 2) { draw(renderer, point2Texture, kube3); }
+                    if (k3[2] == 3) { draw(renderer, point3Texture, kube3); }
+                    if (k3[2] == 4) { draw(renderer, point4Texture, kube3); }
+                    if (k3[2] == 5) { draw(renderer, point5Texture, kube3); }
+                    if (k3[2] == 6) { draw(renderer, point6Texture, kube3); }
                 }
                 if (players == 1) {
+                    score1 = 50;
                     SDL_RenderPresent(renderer);
                     SDL_Delay(3000);
                     draw(renderer, welcomeMainGameTexture, bonusGame);
@@ -2242,17 +2665,19 @@ int main(int argc, char** argv) {
                 if (players == 2)
                 {
                     if (player == 2) {
+                        score2 = 50;
                         SDL_RenderPresent(renderer);
                         SDL_Delay(3000);
                         draw(renderer, welcomeMainGameTexture, bonusGame);
                         SDL_RenderPresent(renderer);
                         SDL_Delay(2000);
-                        currentState = MAIN_GAME;
+                        currentState = RAFFLE1;
                         break;
                     }
                     if (player == 1) {
                         SDL_RenderPresent(renderer);
                         SDL_Delay(3000);
+                        score1 = 50;
                         player = 2;
                         currentState = CHOICE_PLAYER2;
                         break;
@@ -2269,12 +2694,12 @@ int main(int argc, char** argv) {
                     _itoa_s(k1, text, 10);
                     textTexture = get_text_texture(renderer, text, my_font);
                     draw_text(renderer, textTexture, bonus_score);
-                    if (k1 == 1) { draw(renderer, point1Texture, kub2); }
-                    if (k1 == 2) { draw(renderer, point2Texture, kub2); }
-                    if (k1 == 3) { draw(renderer, point3Texture, kub2); }
-                    if (k1 == 4) { draw(renderer, point4Texture, kub2); }
-                    if (k1 == 5) { draw(renderer, point5Texture, kub2); }
-                    if (k1 == 6) { draw(renderer, point6Texture, kub2); }
+                    if (k1 == 1) { draw(renderer, point1Texture, kube2); }
+                    if (k1 == 2) { draw(renderer, point2Texture, kube2); }
+                    if (k1 == 3) { draw(renderer, point3Texture, kube2); }
+                    if (k1 == 4) { draw(renderer, point4Texture, kube2); }
+                    if (k1 == 5) { draw(renderer, point5Texture, kube2); }
+                    if (k1 == 6) { draw(renderer, point6Texture, kube2); }
                 }
                 if (choice_k == 2) {
                     int sum = 0;
@@ -2286,20 +2711,20 @@ int main(int argc, char** argv) {
                     textTexture = get_text_texture(renderer, text, my_font);
                     draw_text(renderer, textTexture, bonus_score);
                     //1 кубик
-                    if (k2[0] == 1) { draw(renderer, point1Texture, kub1); }
-                    if (k2[0] == 2) { draw(renderer, point2Texture, kub1); }
-                    if (k2[0] == 3) { draw(renderer, point3Texture, kub1); }
-                    if (k2[0] == 4) { draw(renderer, point4Texture, kub1); }
-                    if (k2[0] == 5) { draw(renderer, point5Texture, kub1); }
-                    if (k2[0] == 6) { draw(renderer, point6Texture, kub1); }
+                    if (k2[0] == 1) { draw(renderer, point1Texture, kube1); }
+                    if (k2[0] == 2) { draw(renderer, point2Texture, kube1); }
+                    if (k2[0] == 3) { draw(renderer, point3Texture, kube1); }
+                    if (k2[0] == 4) { draw(renderer, point4Texture, kube1); }
+                    if (k2[0] == 5) { draw(renderer, point5Texture, kube1); }
+                    if (k2[0] == 6) { draw(renderer, point6Texture, kube1); }
 
                     //2 кубик
-                    if (k2[1] == 1) { draw(renderer, point1Texture, kub2); }
-                    if (k2[1] == 2) { draw(renderer, point2Texture, kub2); }
-                    if (k2[1] == 3) { draw(renderer, point3Texture, kub2); }
-                    if (k2[1] == 4) { draw(renderer, point4Texture, kub2); }
-                    if (k2[1] == 5) { draw(renderer, point5Texture, kub2); }
-                    if (k2[1] == 6) { draw(renderer, point6Texture, kub2); }
+                    if (k2[1] == 1) { draw(renderer, point1Texture, kube2); }
+                    if (k2[1] == 2) { draw(renderer, point2Texture, kube2); }
+                    if (k2[1] == 3) { draw(renderer, point3Texture, kube2); }
+                    if (k2[1] == 4) { draw(renderer, point4Texture, kube2); }
+                    if (k2[1] == 5) { draw(renderer, point5Texture, kube2); }
+                    if (k2[1] == 6) { draw(renderer, point6Texture, kube2); }
 
                 }
                 if (choice_k == 3) {
@@ -2311,28 +2736,28 @@ int main(int argc, char** argv) {
                     _itoa_s(sum, text, 10);
                     textTexture = get_text_texture(renderer, text, my_font);
                     draw_text(renderer, textTexture, bonus_score);
-                    if (k3[0] == 1) { draw(renderer, point1Texture, kub1); }
-                    if (k3[0] == 2) { draw(renderer, point2Texture, kub1); }
-                    if (k3[0] == 3) { draw(renderer, point3Texture, kub1); }
-                    if (k3[0] == 4) { draw(renderer, point4Texture, kub1); }
-                    if (k3[0] == 5) { draw(renderer, point5Texture, kub1); }
-                    if (k3[0] == 6) { draw(renderer, point6Texture, kub1); }
+                    if (k3[0] == 1) { draw(renderer, point1Texture, kube1); }
+                    if (k3[0] == 2) { draw(renderer, point2Texture, kube1); }
+                    if (k3[0] == 3) { draw(renderer, point3Texture, kube1); }
+                    if (k3[0] == 4) { draw(renderer, point4Texture, kube1); }
+                    if (k3[0] == 5) { draw(renderer, point5Texture, kube1); }
+                    if (k3[0] == 6) { draw(renderer, point6Texture, kube1); }
 
 
-                    if (k3[1] == 1) { draw(renderer, point1Texture, kub2); }
-                    if (k3[1] == 2) { draw(renderer, point2Texture, kub2); }
-                    if (k3[1] == 3) { draw(renderer, point3Texture, kub2); }
-                    if (k3[1] == 4) { draw(renderer, point4Texture, kub2); }
-                    if (k3[1] == 5) { draw(renderer, point5Texture, kub2); }
-                    if (k3[1] == 6) { draw(renderer, point6Texture, kub2); }
+                    if (k3[1] == 1) { draw(renderer, point1Texture, kube2); }
+                    if (k3[1] == 2) { draw(renderer, point2Texture, kube2); }
+                    if (k3[1] == 3) { draw(renderer, point3Texture, kube2); }
+                    if (k3[1] == 4) { draw(renderer, point4Texture, kube2); }
+                    if (k3[1] == 5) { draw(renderer, point5Texture, kube2); }
+                    if (k3[1] == 6) { draw(renderer, point6Texture, kube2); }
 
 
-                    if (k3[2] == 1) { draw(renderer, point1Texture, kub3); }
-                    if (k3[2] == 2) { draw(renderer, point2Texture, kub3); }
-                    if (k3[2] == 3) { draw(renderer, point3Texture, kub3); }
-                    if (k3[2] == 4) { draw(renderer, point4Texture, kub3); }
-                    if (k3[2] == 5) { draw(renderer, point5Texture, kub3); }
-                    if (k3[2] == 6) { draw(renderer, point6Texture, kub3); }
+                    if (k3[2] == 1) { draw(renderer, point1Texture, kube3); }
+                    if (k3[2] == 2) { draw(renderer, point2Texture, kube3); }
+                    if (k3[2] == 3) { draw(renderer, point3Texture, kube3); }
+                    if (k3[2] == 4) { draw(renderer, point4Texture, kube3); }
+                    if (k3[2] == 5) { draw(renderer, point5Texture, kube3); }
+                    if (k3[2] == 6) { draw(renderer, point6Texture, kube3); }
                 }
                 if (players == 1) {
                     SDL_RenderPresent(renderer);
@@ -2351,7 +2776,7 @@ int main(int argc, char** argv) {
                         draw(renderer, welcomeMainGameTexture, bonusGame);
                         SDL_RenderPresent(renderer);
                         SDL_Delay(2000);
-                        currentState = MAIN_GAME;
+                        currentState = RAFFLE1;
                         break;
                     }
                     if (player == 1) {
@@ -2363,14 +2788,863 @@ int main(int argc, char** argv) {
                     }
                     break;
                 }
-
                 break;
             }
+
+
+            case RAFFLE1:
+                draw(renderer, raffle1Texture, bonusGame);
+                draw(renderer, firstPlayerTexture, player1);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentPrev = MAIN_GAME;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        currentState = COMBINATIONS;
+                        break;
+                    }
+                    if (isHit(x, y, brosok)) {
+                        raffle1 = rand() % 6 + 1;
+                        if (raffle1 == 1) { draw(renderer, point1Texture, cube3); }
+                        if (raffle1 == 2) { draw(renderer, point2Texture, cube3); }
+                        if (raffle1 == 3) { draw(renderer, point3Texture, cube3); }
+                        if (raffle1 == 4) { draw(renderer, point4Texture, cube3); }
+                        if (raffle1 == 5) { draw(renderer, point5Texture, cube3); }
+                        if (raffle1 == 6) { draw(renderer, point6Texture, cube3); }
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(2000);
+                        currentState = RAFFLE2;
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        draw(renderer, combinationTexture, combinationsReference);
+                        break;
+                    }
+                    if (isHit(x, y, brosok)) {
+                        draw(renderer, throwTexture, brosok);
+                        break;
+                    }
+                }
+                break;
+            case RAFFLE2:
+                draw(renderer, raffle2Texture, bonusGame);
+                draw(renderer, secondPlayerTexture, player2);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentPrev = MAIN_GAME;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        currentState = COMBINATIONS;
+                        break;
+                    }
+                    if (isHit(x, y, brosok)) {
+                        raffle2 = rand() % 6 + 1;
+                        if (raffle2 == 1) { draw(renderer, point1Texture, cube3); }
+                        if (raffle2 == 2) { draw(renderer, point2Texture, cube3); }
+                        if (raffle2 == 3) { draw(renderer, point3Texture, cube3); }
+                        if (raffle2 == 4) { draw(renderer, point4Texture, cube3); }
+                        if (raffle2 == 5) { draw(renderer, point5Texture, cube3); }
+                        if (raffle2 == 6) { draw(renderer, point6Texture, cube3); }
+                        SDL_RenderPresent(renderer);
+                        SDL_Delay(2000);
+                        if (raffle1 == raffle2) { currentState = RAFFLE1; break; }
+                        else { currentState = MAIN_GAME; }
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        draw(renderer, combinationTexture, combinationsReference);
+                        break;
+                    }
+                    if (isHit(x, y, brosok)) {
+                        draw(renderer, throwTexture, brosok);
+                        break;
+                    }
+                }
+                break;
+
+
             case MAIN_GAME:
                 draw(renderer, mainGameTexture, bonusGame);
+  
+                if (players == 2) {
+                    if (raffle1 > raffle2) { firstPlayer = 1; }
+                    if (raffle2 > raffle1) { firstPlayer = 2; }
+                    if (firstPlayer == 1) {  currentState = PLAYER1; break; }
+                    if (firstPlayer == 2) {  currentState = PLAYER2; break; }
+                }
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentPrev = MAIN_GAME;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        currentState = COMBINATIONS;
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        draw(renderer, combinationTexture, combinationsReference);
+                        break;
+                    }
+                    if (isHit(x, y, brosok)) {
+                        draw(renderer, throwTexture, brosok);
+                        break;
+                    }
+                }
+                break;
+            case PLAYER1:
+                draw(renderer, mainGameTexture, bonusGame);
+                draw(renderer, firstPlayerTexture, player1);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+                {
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentPrev = MAIN_GAME;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        currentState = COMBINATIONS;
+                        break;
+                    }
+                    if (isHit(x, y, brosok)) {
+
+                        int sum = 0;
+                        int k1, k2[2], k3[3], k4[4], k5[5];
+                        int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                        brosok1 cur_brosok = kubik5;
+                        int flag = 1;
+                        do {
+                            switch (cur_brosok) {
+                            case kubik5:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 5; i++) {
+                                    k5[i] = rand() % 6 + 1;
+                                    /*printf("%d  ", k5[i]);*/
+                                }
+                                for (int i = 0; i < 5; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                    if (i == 2) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube3); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube3); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube3); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube3); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube3); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube3); }
+                                    }
+                                    if (i == 3) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube4); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube4); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube4); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube4); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube4); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube4); }
+                                    }
+                                    if (i == 4) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube5); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube5); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube5); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube5); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube5); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube5); }
+                                    }
+                            
+                
+                                }
+                                SDL_RenderPresent(renderer);
+                                SDL_Delay(1000);
+                                
+                                if (cnt_kub5(k5) == 0) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik5; currentState = PLAYER1; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 1) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik1; currentState = PLAYER1;}
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 2) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik2; currentState = PLAYER1;}
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 3) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik3;currentState = PLAYER1; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 4) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik4; currentState = PLAYER1;}
+                                    else { SCORE1 = sum; flag = 0; currentState = PLAYER2;}
+                                }
+                                if (cnt_kub5(k5) == 5) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik4:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 4; i++) {
+                                    k4[i] = rand() % 6 + 1;
+                                    /*printf("%d  ", k4[i]);*/
+                                }
+                                for (int i = 0; i < 4; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                    if (i == 2) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube3); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube3); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube3); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube3); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube3); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube3); }
+                                    }
+                                    if (i == 3) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube4); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube4); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube4); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube4); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube4); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube4); }
+                                    }
+                                    draw(renderer, mainGameTexture, bonusGame);
+                                    draw(renderer, firstPlayerTexture, player1);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                }
+                           
+                                if (cnt_kub4(k4) == 0) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub4(k4) == 1) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik1; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub4(k4) == 2) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik2; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub4(k4) == 3) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik3; }
+                                    else { SCORE1 = sum; flag = 0;; }
+                                }
+                                if (cnt_kub4(k4) == 4) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik3:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 3; i++) {
+                                    k3[i] = rand() % 6 + 1;
+                                    /*printf("%d  ", k3[i]);*/
+                                }
+                                for (int i = 0; i < 3; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                    if (i == 2) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube3); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube3); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube3); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube3); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube3); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube3); }
+                                    }
+                                    draw(renderer, mainGameTexture, bonusGame);
+                                    draw(renderer, firstPlayerTexture, player1);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                }
+                              
+                                if (cnt_kub3(k3) == 0) {
+                                    sum += kub3(k3);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub3(k3) == 1) {
+                                    sum += kub3(k3);
+                                    if (sum < 50) { cur_brosok = kubik1; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub3(k3) == 2) {
+                                    sum += kub3(k3);
+                                    if (sum < 50) { cur_brosok = kubik2; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub3(k3) == 3) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik2:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 2; i++) {
+                                    k2[i] = rand() % 6 + 1;
+                                    /*printf("%d  ", k2[i]);*/
+                                }
+                                for (int i = 0; i < 2; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                    draw(renderer, mainGameTexture, bonusGame);
+                                    draw(renderer, firstPlayerTexture, player1);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                }
+                            
+                                if (cnt_kub2(k2) == 0) {
+                                    sum += kub2(k2);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub2(k2) == 1) {
+                                    sum += kub2(k2);
+                                    if (sum < 50) { cur_brosok = kubik1; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub2(k2) == 2) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik1:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                k1 = rand() % 6 + 1;
+                                /*printf("%d  ", k1);*/
+                                for (int i = 0; i < 1; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    draw(renderer, mainGameTexture, bonusGame);
+                                    draw(renderer, firstPlayerTexture, player1);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                }
+                       
+                                if (cnt_kub1(k1) == 0) {
+                                    sum += kub1(k1);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE1 = sum; flag = 0; }
+                                }
+                                if (cnt_kub1(k1) == 1) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            }
+                        } while (flag != 0);
+                       
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, brosok)) {
+                        draw(renderer, throwTexture, brosok);
+                        break;
+                    }
+                }
                 break;
 
+
+            case PLAYER2:
+                draw(renderer, mainGameTexture, bonusGame);
+                draw(renderer, secondPlayerTexture, player2);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+                {
+                    if (isHit(x, y, Quit))
+                    {
+                        currentState = MENU;
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentPrev = MAIN_GAME;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                    if (isHit(x, y, combinationsReference)) {
+                        currentState = COMBINATIONS;
+                        break;
+                    }
+                    if (isHit(x, y, brosok)) {
+                        int sum = 0;
+                        int k1, k2[2], k3[3], k4[4], k5[5];
+                        int cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                        brosok1 cur_brosok = kubik5;
+                        int flag = 1;
+                        do {
+                            switch (cur_brosok) {
+                            case kubik5:
+                               /* printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 5; i++) {
+                                    k5[i] = rand() % 6 + 1;
+                                   /* printf("%d  ", k5[i]);*/
+                                }
+                                for (int i = 0; i < 5; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                    if (i == 2) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube3); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube3); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube3); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube3); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube3); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube3); }
+                                    }
+                                    if (i == 3) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube4); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube4); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube4); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube4); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube4); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube4); }
+                                    }
+                                    if (i == 4) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube5); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube5); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube5); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube5); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube5); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube5); }
+                                    }
+                                }
+                                SDL_RenderPresent(renderer);
+                                SDL_Delay(2000);
+                                if (cnt_kub5(k5) == 0) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 1) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik1; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 2) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik2; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 3) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik3; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 4) {
+                                    sum += kub5(k5);
+                                    if (sum < 50) { cur_brosok = kubik4; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub5(k5) == 5) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik4:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 4; i++) {
+                                    k4[i] = rand() % 6 + 1;
+                                    /*printf("%d  ", k4[i]);*/
+                                }
+                                for (int i = 0; i < 4; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                    if (i == 2) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube3); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube3); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube3); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube3); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube3); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube3); }
+                                    }
+                                    if (i == 3) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube4); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube4); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube4); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube4); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube4); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube4); }
+                                    }
+                                }
+                                SDL_RenderPresent(renderer);
+                                SDL_Delay(2000);
+                                if (cnt_kub4(k4) == 0) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub4(k4) == 1) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik1; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub4(k4) == 2) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik2; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub4(k4) == 3) {
+                                    sum += kub4(k4);
+                                    if (sum < 50) { cur_brosok = kubik3; }
+                                    else { SCORE2 = sum; flag = 0;; }
+                                }
+                                if (cnt_kub4(k4) == 4) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik3:
+                               /* printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 3; i++) {
+                                    k3[i] = rand() % 6 + 1;
+                                   /* printf("%d  ", k3[i]);*/
+                                }
+                                for (int i = 0; i < 3; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                    if (i == 2) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube3); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube3); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube3); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube3); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube3); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube3); }
+                                    }
+                                }
+                                SDL_RenderPresent(renderer);
+                                SDL_Delay(2000);
+                                if (cnt_kub3(k3) == 0) {
+                                    sum += kub3(k3);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub3(k3) == 1) {
+                                    sum += kub3(k3);
+                                    if (sum < 50) { cur_brosok = kubik1; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub3(k3) == 2) {
+                                    sum += kub3(k3);
+                                    if (sum < 50) { cur_brosok = kubik2; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub3(k3) == 3) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik2:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                for (int i = 0; i < 2; i++) {
+                                    k2[i] = rand() % 6 + 1;
+                                    /*printf("%d  ", k2[i]);*/
+                                }
+                                for (int i = 0; i < 2; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                    if (i == 1) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube2); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube2); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube2); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube2); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube2); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube2); }
+                                    }
+                                }
+                                SDL_RenderPresent(renderer);
+                                SDL_Delay(2000);
+                                if (cnt_kub2(k2) == 0) {
+                                    sum += kub2(k2);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub2(k2) == 1) {
+                                    sum += kub2(k2);
+                                    if (sum < 50) { cur_brosok = kubik1; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub2(k2) == 2) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                            case kubik1:
+                                /*printf("\nВыпало: \n");*/
+                                cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
+                                k1 = rand() % 6 + 1;
+                                /*printf("%d  ", k1);*/
+                                for (int i = 0; i < 1; i++) {
+                                    if (i == 0) {
+                                        if (k5[i] == 1) { draw(renderer, point1Texture, cube1); }
+                                        if (k5[i] == 2) { draw(renderer, point2Texture, cube1); }
+                                        if (k5[i] == 3) { draw(renderer, point3Texture, cube1); }
+                                        if (k5[i] == 4) { draw(renderer, point4Texture, cube1); }
+                                        if (k5[i] == 5) { draw(renderer, point5Texture, cube1); }
+                                        if (k5[i] == 6) { draw(renderer, point6Texture, cube1); }
+                                    }
+                                }
+                                SDL_RenderPresent(renderer);
+                                SDL_Delay(2000);
+                                if (cnt_kub1(k1) == 0) {
+                                    sum += kub1(k1);
+                                    if (sum < 50) { cur_brosok = kubik5; }
+                                    else { SCORE2 = sum; flag = 0; }
+                                }
+                                if (cnt_kub1(k1) == 1) { sum = 0; flag = 0; }
+                                /*printf("\nТекущая сумма: %d", sum);*/
+                                break;
+                                SDL_Delay(2000);
+                            }
+                        } while (flag != 0);
+
+                        printf("\n");
+                        /*printf("Сумма 2-го игрока: %d\n", SCORE2);*/
+                        if (step1 == 1) { currentState = PLAYER1; }
+                        if (SCORE2 >= 50) { step2 = 2; }
+                        if (step1 != 1 && step2 == 1) { currentState = PLAYER2; }
+                        choice = 0;
+                 
+                    }
+                    }
+                    break;
+
+            case COMBINATIONS:
+                draw(renderer, combinationsTexture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit))
+                    {
+                        if (currentPrev == MAIN_GAME) {
+                            currentState = MAIN_GAME;
+                        }
+                        else { currentState = MENU; }
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        currentState = RULES;
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        currentPrev = MAIN_GAME;
+                        currentState = SETTINGS;
+                        break;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, Quit)) {
+                        draw(renderer, QuitTexture, Quit);
+                        break;
+                    }
+                    if (isHit(x, y, Settings)) {
+                        draw(renderer, NKTexture, Settings);
+                        break;
+                    }
+                    if (isHit(x, y, Rules)) {
+                        draw(renderer, RuleTexture, Rules);
+                        break;
+                    }
+                }
+                break;
             }
+
         }
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         //SDL_RenderClear(renderer);
