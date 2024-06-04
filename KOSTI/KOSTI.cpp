@@ -42,7 +42,6 @@ enum State {
     COMBINATIONS,
     RAFFLE1,
     RAFFLE2,
-    BROSOK,
     RECORD,
     PLAYER1,
     PLAYER2,
@@ -849,7 +848,7 @@ int main(int argc, char** argv) {
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
-    window = SDL_CreateWindow(u8"Кости", 0, 30, 1535, 800, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(u8"Кости-1000", 0, 30, 1535, 800, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
 
     TTF_Init();
@@ -3419,47 +3418,6 @@ int main(int argc, char** argv) {
                 }
                 break;
 
-                //case PLAYER1:
-                //    draw(renderer, mainGameTexture, bonusGame);
-                //    draw(renderer, firstPlayerTexture, player1);
-                //    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-                //    {
-                //        if (isHit(x, y, Quit))
-                //        {
-                //            currentState = MENU;
-                //            break;
-                //        }
-                //        if (isHit(x, y, Rules)) {
-                //            currentState = RULES;
-                //            break;
-                //        }
-                //        if (isHit(x, y, Settings)) {
-                //            currentPrev = MAIN_GAME;
-                //            currentState = SETTINGS;
-                //            break;
-                //        }
-                //        if (isHit(x, y, combinationsReference)) {
-                //            currentState = COMBINATIONS;
-                //            break;
-                //        }
-                //        if (isHit(x, y, brosok)) {
-                //            //hod1(renderer, firstPlayer);
-                //            //SDL_Delay(2000);
-                //            currentState = HOD1;
-                //            break;
-                //            //currentState = PLAYER2;
-                //        }
-                //
-                //    }
-                //    if (event.type == SDL_MOUSEMOTION) {
-                //        SDL_GetMouseState(&x, &y);
-                //        if (isHit(x, y, brosok)) {
-                //            draw(renderer, throwTexture, brosok);
-                //            break;
-                //        }
-                //    }
-                //    break;
-
             case PLAYER1:
                 firstPlayer = 1;
                 draw(renderer, mainRecordTexture, bonusGame);
@@ -5311,8 +5269,8 @@ int main(int argc, char** argv) {
                 {
                     SDL_GetMouseState(&x, &y);
                     if (isHit(x, y, record)) {
-                        if (firstPlayer == 1) { score1 += tmpSum1; tmpSum1 = 0; currentState = PLAYER2; break; }
-                        if (firstPlayer == 2) { score2 += tmpSum2; tmpSum2 = 0; currentState = PLAYER1; break; }
+                        if (firstPlayer == 1) { score1 += tmpSum1; tmpSum1 = 0; currentState = PLAYER2; cur_brosok = kubik5; break; }
+                        if (firstPlayer == 2) { score2 += tmpSum2; tmpSum2 = 0; currentState = PLAYER1; cur_brosok = kubik5; break; }
                     }
                     if (isHit(x, y, brosok))
                     {
@@ -5322,7 +5280,7 @@ int main(int argc, char** argv) {
                             if (cnt_cub == 2) { currentState = PLAYER1; cur_brosok = kubik2; }
                             if (cnt_cub == 3) { currentState = PLAYER1; cur_brosok = kubik3; }
                             if (cnt_cub == 4) { currentState = PLAYER1; cur_brosok = kubik4; }
-                            if (cnt_cub == 5) { currentState = PLAYER2; firstPlayer = 2;  cur_brosok = kubik5; }
+                            if (cnt_cub == 5) { cur_brosok = kubik5; currentState = PLAYER2; firstPlayer = 2;  }
                             break;
                         }
                         if (firstPlayer == 2) {
@@ -5331,13 +5289,11 @@ int main(int argc, char** argv) {
                             if (cnt_cub == 2) { currentState = PLAYER2; cur_brosok = kubik2; }
                             if (cnt_cub == 3) { currentState = PLAYER2; cur_brosok = kubik3; }
                             if (cnt_cub == 4) { currentState = PLAYER2; cur_brosok = kubik4; }
-                            if (cnt_cub == 5) { currentState = PLAYER1; firstPlayer = 1; cur_brosok = kubik5; }
+                            if (cnt_cub == 5) { cur_brosok = kubik5; currentState = PLAYER1; firstPlayer = 1;  }
                             break;
                         }
                     }
                 }
-                break;
-            case BROSOK:
                 break;
 
 
