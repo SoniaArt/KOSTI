@@ -918,9 +918,9 @@ int main(int argc, char** argv) {
     int bolt1 = 0;
     int bolt2 = 0;
 
-    int winnerLastGame;
-    int score1LastGame;
-    int score2LastGame;
+    int winnerLastGame=0;
+    int score1LastGame=0;
+    int score2LastGame=0;
 
     Mix_Init(0);
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
@@ -1006,7 +1006,6 @@ int main(int argc, char** argv) {
                 _itoa_s(score2LastGame, text, 10);
                 textTexture = get_text_texture(renderer, text, my_font);
                 draw_text(renderer, textTexture, sumPlayer2);
-                currentPrev = PROGRESS;
                 if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
                     SDL_GetMouseState(&x, &y);
                     if (isHit(x, y, quit2)) {
