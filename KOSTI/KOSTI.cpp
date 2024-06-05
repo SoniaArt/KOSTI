@@ -45,8 +45,6 @@ enum State {
     RECORD,
     PLAYER1,
     PLAYER2,
-    HOD1,
-    HOD2,
     EXIT,
     SETTINGS,
     RULES,
@@ -54,7 +52,7 @@ enum State {
     PROGRESS,
     WIN_PLAYER1,
     WIN_PLAYER2,
-
+    SAVE_RESULT,
 };
 SDL_Texture* get_text_texture(SDL_Renderer*& renderer, char* text, TTF_Font* font) {
     SDL_Surface* textSurface = NULL;
@@ -424,10 +422,17 @@ int main(int argc, char** argv) {
     int k = 0;
     char text[10];
 
-    /*Mix_Init(0);
-    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+    int fonMusic = 1;
+    int musEffects = 1;
 
-    char music[10] = "music.wav";*/
+    char* set[2];
+
+    FILE* f;
+    fopen_s(&f, "C:/Users/ADMIN/source/repos/KOSTI/KOSTI/settings.txt", "r");
+    if (f) {
+        fscanf_s(f, "%d %d", &fonMusic, &musEffects);
+    }
+    fclose(f);
 
     SDL_Surface* fonImage = IMG_Load("m1.bmp"); //самая первая картинка с меню
     SDL_SetColorKey(fonImage, SDL_TRUE, SDL_MapRGB(fonImage->format, 255, 255, 255));
@@ -754,10 +759,35 @@ int main(int argc, char** argv) {
     SDL_Texture* pantsTexture = SDL_CreateTextureFromSurface(renderer, pantsImage);
     SDL_FreeSurface(pantsImage);
 
-    SDL_Surface* samosvalImage = IMG_Load("pants.bmp"); // штаны
+    SDL_Surface* samosvalImage = IMG_Load("pants.bmp"); // самосвал
     SDL_SetColorKey(samosvalImage, SDL_TRUE, SDL_MapRGB(samosvalImage->format, 255, 255, 255));
     SDL_Texture* samosvalTexture = SDL_CreateTextureFromSurface(renderer, samosvalImage);
     SDL_FreeSurface(samosvalImage);
+
+    SDL_Surface* pitImage = IMG_Load("pants.bmp"); // яма
+    SDL_SetColorKey(pitImage, SDL_TRUE, SDL_MapRGB(pitImage->format, 255, 255, 255));
+    SDL_Texture* pitTexture = SDL_CreateTextureFromSurface(renderer, pitImage);
+    SDL_FreeSurface(pitImage);
+
+    SDL_Surface* progressImage = IMG_Load("progress.bmp"); // прогресс
+    SDL_SetColorKey(progressImage, SDL_TRUE, SDL_MapRGB(progressImage->format, 255, 255, 255));
+    SDL_Texture* progressTexture = SDL_CreateTextureFromSurface(renderer, progressImage);
+    SDL_FreeSurface(progressImage);
+
+    SDL_Surface* saveResultImage = IMG_Load("saveResult.bmp"); // сохранить в файл?
+    SDL_SetColorKey(saveResultImage, SDL_TRUE, SDL_MapRGB(saveResultImage->format, 255, 255, 255));
+    SDL_Texture* saveResultTexture = SDL_CreateTextureFromSurface(renderer, saveResultImage);
+    SDL_FreeSurface(saveResultImage);
+
+    SDL_Surface* yesSaveImage = IMG_Load("yesSave.bmp"); // да сохранить
+    SDL_SetColorKey(yesSaveImage, SDL_TRUE, SDL_MapRGB(yesSaveImage->format, 255, 255, 255));
+    SDL_Texture* yesSaveTexture = SDL_CreateTextureFromSurface(renderer, yesSaveImage);
+    SDL_FreeSurface(yesSaveImage);
+
+    SDL_Surface* noSaveImage = IMG_Load("noSave.bmp"); // не сохранять
+    SDL_SetColorKey(noSaveImage, SDL_TRUE, SDL_MapRGB(noSaveImage->format, 255, 255, 255));
+    SDL_Texture* noSaveTexture = SDL_CreateTextureFromSurface(renderer, noSaveImage);
+    SDL_FreeSurface(noSaveImage);
 
     //   МЕСТОПОЛОЖЕНИE КНОПОК     ///    
     SDL_Rect Quit = { 1054, 0, 80, 80 };
@@ -843,6 +873,15 @@ int main(int argc, char** argv) {
     SDL_Rect scorePLayer2 = { 1270,259,113,73 };
 
     SDL_Rect upperCub = { 414, 157, 720, 50 };
+    SDL_Rect quit2 = { 1380, 0, 80,80 };
+
+    SDL_Rect winner = { 1094, 264, 113, 73 };
+    SDL_Rect sumPlayer1 = { 317, 524, 113,73 };
+    SDL_Rect sumPlayer2 = { 1094, 524, 113,73 };
+
+    SDL_Rect yesSave = { 393, 434, 160, 160 };
+    SDL_Rect noSave = { 974, 434, 160, 160 };
+
 
     SDL_Event event;
     State currentState = MENU;
@@ -862,26 +901,26 @@ int main(int argc, char** argv) {
     int choice_k = 0;
     int sum2 = 0;
 
-    int fonMusic = 1;
-    int musEffects = 1;
 
-    int players = 0;
+    int players = 2;
     int player = 1;
     int score1 = 0, score2 = 0;
 
     int raffle1 = 0, raffle2 = 0;
     int firstPlayer = 1;
 
-    //int tmpSum = 0;
     int tmpSum1 = 0;
     int tmpSum2 = 0;
-    bool waitForBtn = false;
     int begin_game = 0;
 
     int cnt_cub = 0;
 
     int bolt1 = 0;
     int bolt2 = 0;
+
+    int winnerLastGame;
+    int score1LastGame;
+    int score2LastGame;
 
     Mix_Init(0);
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
@@ -914,7 +953,11 @@ int main(int argc, char** argv) {
                         break;
                     }
                     if (isHit(x, y, startGame)) {
-                        currentState = CHOICE_GAME_MODE;
+                        currentState = CHOICE_DIFFICULTY_LEVEL;
+                        break;
+                    }
+                    if (isHit(x, y, checkProgress)) {
+                        currentState = PROGRESS;
                         break;
                     }
 
@@ -945,6 +988,40 @@ int main(int argc, char** argv) {
                     }
                 }
                 break;
+
+            case PROGRESS:
+                draw(renderer, progressTexture, bonusGame);
+                FILE* f;
+                fopen_s(&f, "C:/Users/ADMIN/source/repos/KOSTI/KOSTI/progress.txt", "r");
+                if (f) {
+                    fscanf_s(f, "%d %d %d", &winnerLastGame, &score1LastGame, &score2LastGame);
+                }
+                fclose(f);
+                _itoa_s(winnerLastGame, text, 10);
+                textTexture = get_text_texture(renderer, text, my_font);
+                draw_text(renderer, textTexture, winner);
+                _itoa_s(score1LastGame, text, 10);
+                textTexture = get_text_texture(renderer, text, my_font);
+                draw_text(renderer, textTexture, sumPlayer1);
+                _itoa_s(score2LastGame, text, 10);
+                textTexture = get_text_texture(renderer, text, my_font);
+                draw_text(renderer, textTexture, sumPlayer2);
+                currentPrev = PROGRESS;
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, quit2)) {
+                        currentState = MENU;
+                    }
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, quit2)) {
+                        draw(renderer, QuitTexture, quit2);
+                        break;
+                    }
+                }
+                break;
+
             case SETTINGS:
                 draw(renderer, settingsTexture, bonusGame);
                 if (fonMusic == 1) { draw(renderer, onTexture, onFonMusic); }
@@ -1075,64 +1152,6 @@ int main(int argc, char** argv) {
                     }
                     if (isHit(x, y, Settings)) {
                         draw(renderer, NKTexture, Settings);
-                        break;
-                    }
-                }
-                break;
-            case CHOICE_GAME_MODE:
-                currentPrev = CHOICE_GAME_MODE;
-                draw(renderer, choiceGameModeTexture, choiceGameMode);
-                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-                {
-                    SDL_GetMouseState(&x, &y);
-                    if (isHit(x, y, Quit) || isHit(x, y, Settings) || isHit(x, y, Rules) || isHit(x, y, playerPlayer) || isHit(x, y, playerComp)) {
-                        if (musEffects == 1) { sound(music); }
-                    }
-                    if (isHit(x, y, Quit))
-                    {
-                        currentState = MENU;
-                        break;
-                    }
-                    if (isHit(x, y, Rules)) {
-                        currentState = RULES;
-                        break;
-                    }
-                    if (isHit(x, y, Settings)) {
-                        currentState = SETTINGS;
-                        break;
-                    }
-                    if (isHit(x, y, playerPlayer)) {
-                        players = 2;
-                        currentState = CHOICE_DIFFICULTY_LEVEL;
-                        break;
-                    }
-                    if (isHit(x, y, playerComp)) {
-                        players = 1;
-                        currentState = CHOICE_DIFFICULTY_LEVEL;
-                        break;
-                    }
-                }
-                if (event.type == SDL_MOUSEMOTION)
-                {
-                    SDL_GetMouseState(&x, &y);
-                    if (isHit(x, y, Quit)) {
-                        draw(renderer, QuitTexture, Quit);
-                        break;
-                    }
-                    if (isHit(x, y, Settings)) {
-                        draw(renderer, NKTexture, Settings);
-                        break;
-                    }
-                    if (isHit(x, y, playerPlayer)) {
-                        draw(renderer, PlayerPlayerTexture, playerPlayer);
-                        break;
-                    }
-                    if (isHit(x, y, playerComp)) {
-                        draw(renderer, PlayerCompTexture, playerComp);
-                        break;
-                    }
-                    if (isHit(x, y, Rules)) {
-                        draw(renderer, RuleTexture, Rules);
                         break;
                     }
                 }
@@ -1585,7 +1604,6 @@ int main(int argc, char** argv) {
                             currentState = BONUS_WIN;
                         }
                         else { currentState = BONUS_LOSE; }
-                        //draw(renderer, redNumberTexture, seven);
                         break;
                     }
                     if (isHit(x, y, eight))
@@ -1598,7 +1616,6 @@ int main(int argc, char** argv) {
                             currentState = BONUS_WIN;
                         }
                         else { currentState = BONUS_LOSE; }
-                        //draw(renderer, redNumberTexture, eight);
                         break;
                     }
 
@@ -2974,8 +2991,8 @@ int main(int argc, char** argv) {
                 if (players == 2) {
                     if (raffle1 > raffle2) { firstPlayer = 1; }
                     if (raffle2 > raffle1) { firstPlayer = 2; }
-                    if (firstPlayer == 1) { /*draw(renderer, firstPlayerTexture, player1);*/ currentState = PLAYER1; break; }
-                    if (firstPlayer == 2) { /*draw(renderer, secondPlayerTexture, player2);*/ currentState = PLAYER2; break; }
+                    if (firstPlayer == 1) {  currentState = PLAYER1; break; }
+                    if (firstPlayer == 2) {  currentState = PLAYER2; break; }
                 }
                 if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
                     SDL_GetMouseState(&x, &y);
@@ -3748,20 +3765,17 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
+                                          
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
+                                                
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -3838,7 +3852,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -3846,12 +3859,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -3924,18 +3934,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -3972,7 +3978,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -3983,8 +3988,6 @@ int main(int argc, char** argv) {
                                         break;
                                     }
                                 }
-                                //currentState = PLAYER1;
-                                //if(score1 < 50) { cur_brosok = kubik5; }
                                 break;
 
                             }
@@ -4684,20 +4687,17 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
+
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
+  
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -4774,7 +4774,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -4782,12 +4781,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -4860,18 +4856,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -4908,7 +4900,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -4919,8 +4910,6 @@ int main(int argc, char** argv) {
                                         break;
                                     }
                                 }
-                                //currentState = PLAYER1;
-                                //if(score1 < 50) { cur_brosok = kubik5; }
                                 break;
 
                             }
@@ -5620,20 +5609,15 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -5710,7 +5694,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -5718,12 +5701,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -5798,18 +5778,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -5846,7 +5822,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -5857,8 +5832,6 @@ int main(int argc, char** argv) {
                                         break;
                                     }
                                 }
-                                //currentState = PLAYER1;
-                                //if(score1 < 50) { cur_brosok = kubik5; }
                                 break;
 
                             }
@@ -6440,7 +6413,7 @@ int main(int argc, char** argv) {
                                                 bolt1++;
                                                 if (bolt1 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score1 -= 50;
+                                                    score1 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -6544,7 +6517,7 @@ int main(int argc, char** argv) {
                                                 bolt1++;
                                                 if (bolt1 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score1 -= 50;
+                                                    score1 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -6558,20 +6531,15 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -6634,7 +6602,7 @@ int main(int argc, char** argv) {
                                                 bolt1++;
                                                 if (bolt1 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score1 -= 50;
+                                                    score1 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -6648,7 +6616,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -6656,12 +6623,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -6719,7 +6683,7 @@ int main(int argc, char** argv) {
                                                     bolt1++;
                                                     if (bolt1 % 3 == 0) {
                                                         draw(renderer, boltTexture, upperCub);
-                                                        score1 -= 50;
+                                                        score1 -= 100;
                                                     }
                                                 }
                                                 SDL_RenderPresent(renderer);
@@ -6734,18 +6698,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -6769,7 +6729,7 @@ int main(int argc, char** argv) {
                                                 bolt1++;
                                                 if (bolt1 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score1 -= 50;
+                                                    score1 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -6782,7 +6742,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -6793,8 +6752,7 @@ int main(int argc, char** argv) {
                                         break;
                                     }
                                 }
-                                //currentState = PLAYER1;
-                                //if(score1 < 50) { cur_brosok = kubik5; }
+
                                 break;
 
                             }
@@ -6869,7 +6827,7 @@ int main(int argc, char** argv) {
                         if (choiceDiffLevel == 1) {
                             if (score2 < 50 && bolt2 == 0)
                             {
-                                //if (firstPlayer == 1) { draw(renderer, firstPlayerTexture, player1); }
+
                                 draw(renderer, secondPlayerTexture, player2);
                                 int sum = 0;
                                 int k1, k2[2], k3[3], k4[4], k5[5];
@@ -6879,11 +6837,10 @@ int main(int argc, char** argv) {
                                     case kubik5:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, bonusGame);
+
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 5; i++) {
                                                 k5[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k5[i]);
                                             }
 
                                             for (int i = 0; i < 5; i++) {
@@ -7436,8 +7393,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
                                         }
 
 
@@ -7445,11 +7400,9 @@ int main(int argc, char** argv) {
                                     case kubik4:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 4; i++) {
                                                 k4[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k4[i]);
                                             }
 
                                             for (int i = 0; i < 4; i++) {
@@ -7545,20 +7498,15 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -7635,7 +7583,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -7643,12 +7590,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -7718,18 +7662,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -7766,7 +7706,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -7786,7 +7725,6 @@ int main(int argc, char** argv) {
                         if (choiceDiffLevel == 2) {
                             if (score2 < 50 && bolt2 == 0)
                             {
-                                //if (firstPlayer == 1) { draw(renderer, firstPlayerTexture, player1); }
                                 draw(renderer, secondPlayerTexture, player2);
                                 int sum = 0;
                                 int k1, k2[2], k3[3], k4[4], k5[5];
@@ -7796,11 +7734,9 @@ int main(int argc, char** argv) {
                                     case kubik5:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, bonusGame);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 5; i++) {
                                                 k5[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k5[i]);
                                             }
 
                                             for (int i = 0; i < 5; i++) {
@@ -8237,11 +8173,9 @@ int main(int argc, char** argv) {
                                     case kubik5:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, bonusGame);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 5; i++) {
                                                 k5[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k5[i]);
                                             }
                                             bool waitForBtn = false;
                                             for (int i = 0; i < 5; i++) {
@@ -8354,8 +8288,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
                                         }
 
 
@@ -8363,11 +8295,9 @@ int main(int argc, char** argv) {
                                     case kubik4:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 4; i++) {
                                                 k4[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k4[i]);
                                             }
 
                                             for (int i = 0; i < 4; i++) {
@@ -8463,20 +8393,15 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -8553,7 +8478,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -8561,12 +8485,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -8634,18 +8555,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -8682,7 +8599,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -8693,8 +8609,6 @@ int main(int argc, char** argv) {
                                         break;
                                     }
                                 }
-                                //currentState = PLAYER1;
-                                //if(score1 < 50) { cur_brosok = kubik5; }
                                 break;
 
                             }
@@ -8705,7 +8619,6 @@ int main(int argc, char** argv) {
                         if (choiceDiffLevel == 3) {
                             if (score2 < 50 && bolt2 == 0)
                             {
-                                //if (firstPlayer == 1) { draw(renderer, firstPlayerTexture, player1); }
                                 draw(renderer, secondPlayerTexture, player2);
                                 int sum = 0;
                                 int k1, k2[2], k3[3], k4[4], k5[5];
@@ -8715,11 +8628,9 @@ int main(int argc, char** argv) {
                                     case kubik5:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, bonusGame);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 5; i++) {
                                                 k5[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k5[i]);
                                             }
 
                                             for (int i = 0; i < 5; i++) {
@@ -9156,11 +9067,9 @@ int main(int argc, char** argv) {
                                     case kubik5:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, bonusGame);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 5; i++) {
                                                 k5[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k5[i]);
                                             }
                                             bool waitForBtn = false;
                                             for (int i = 0; i < 5; i++) {
@@ -9273,8 +9182,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
                                         }
 
 
@@ -9282,11 +9189,9 @@ int main(int argc, char** argv) {
                                     case kubik4:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 4; i++) {
                                                 k4[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k4[i]);
                                             }
 
                                             for (int i = 0; i < 4; i++) {
@@ -9382,20 +9287,15 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -9472,7 +9372,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -9480,12 +9379,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -9553,18 +9449,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -9601,7 +9493,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -9612,8 +9503,6 @@ int main(int argc, char** argv) {
                                         break;
                                     }
                                 }
-                                //currentState = PLAYER1;
-                                //if(score1 < 50) { cur_brosok = kubik5; }
                                 break;
 
                             }
@@ -9624,7 +9513,6 @@ int main(int argc, char** argv) {
                         if (choiceDiffLevel == 4) {
                             if (score2 < 50 && bolt2 == 0)
                             {
-                                //if (firstPlayer == 1) { draw(renderer, firstPlayerTexture, player1); }
                                 draw(renderer, secondPlayerTexture, player2);
                                 int sum = 0;
                                 int k1, k2[2], k3[3], k4[4], k5[5];
@@ -9634,11 +9522,9 @@ int main(int argc, char** argv) {
                                     case kubik5:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, bonusGame);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 5; i++) {
                                                 k5[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k5[i]);
                                             }
 
                                             for (int i = 0; i < 5; i++) {
@@ -10075,11 +9961,9 @@ int main(int argc, char** argv) {
                                     case kubik5:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, bonusGame);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 5; i++) {
                                                 k5[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k5[i]);
                                             }
                                             bool waitForBtn = false;
                                             for (int i = 0; i < 5; i++) {
@@ -10179,7 +10063,7 @@ int main(int argc, char** argv) {
                                                 bolt2++;
                                                 if (bolt2 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score2 -= 50;
+                                                    score2 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -10192,8 +10076,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
                                         }
 
 
@@ -10201,11 +10083,9 @@ int main(int argc, char** argv) {
                                     case kubik4:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 4; i++) {
                                                 k4[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k4[i]);
                                             }
 
                                             for (int i = 0; i < 4; i++) {
@@ -10287,7 +10167,7 @@ int main(int argc, char** argv) {
                                                 bolt2++;
                                                 if (bolt2 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score2 -= 50;
+                                                    score2 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -10301,20 +10181,15 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
-                                            //SDL_Delay(2000);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik3:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 3; i++) {
                                                 k3[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k3[i]);
                                             }
 
                                             for (int i = 0; i < 3; i++) {
@@ -10377,7 +10252,7 @@ int main(int argc, char** argv) {
                                                 bolt2++;
                                                 if (bolt2 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score2 -= 50;
+                                                    score2 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -10391,7 +10266,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
 
                                         }
 
@@ -10399,12 +10273,9 @@ int main(int argc, char** argv) {
                                     case kubik2:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             for (int i = 0; i < 2; i++) {
                                                 k2[i] = rand() % 6 + 1;
-                                                //printf("%d  ", k2[i]);
                                             }
 
                                             for (int i = 0; i < 2; i++) {
@@ -10457,7 +10328,7 @@ int main(int argc, char** argv) {
                                                     bolt2++;
                                                     if (bolt2 % 3 == 0) {
                                                         draw(renderer, boltTexture, upperCub);
-                                                        score1 -= 50;
+                                                        score1 -= 100;
                                                     }
                                                 }
                                                 SDL_RenderPresent(renderer);
@@ -10472,18 +10343,14 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
-                                            //SDL_RenderPresent(renderer);
                                         }
 
                                         break;
                                     case kubik1:
                                         SDL_GetMouseState(&x, &y);
                                         if (isHit(x, y, brosok)) {
-                                            //SDL_RenderPresent(renderer);
-                                            //draw(renderer, mainGameTexture, record);
                                             cnt1 = 0, cnt2 = 0, cnt3 = 0, cnt4 = 0, cnt5 = 0, cnt6 = 0;
                                             k1 = rand() % 6 + 1;
-                                            //printf("%d  ", k1);
 
                                             if (k1 == 1) { draw(renderer, point1Texture, cube2); }
                                             if (k1 == 2) { draw(renderer, point2Texture, cube2); }
@@ -10507,7 +10374,7 @@ int main(int argc, char** argv) {
                                                 bolt2++;
                                                 if (bolt2 % 3 == 0) {
                                                     draw(renderer, boltTexture, upperCub);
-                                                    score2 -= 50;
+                                                    score2 -= 100;
                                                 }
                                                 SDL_RenderPresent(renderer);
                                                 SDL_Delay(1500);
@@ -10520,7 +10387,6 @@ int main(int argc, char** argv) {
                                             draw_text(renderer, textTexture, tmpSum);
                                             SDL_RenderPresent(renderer);
 
-                                            //SDL_RenderPresent(renderer);
                                             SDL_Delay(1500);
                                         }
                                         break;
@@ -10531,8 +10397,6 @@ int main(int argc, char** argv) {
                                         break;
                                     }
                                 }
-                                //currentState = PLAYER1;
-                                //if(score1 < 50) { cur_brosok = kubik5; }
                                 break;
 
                             }
@@ -10574,10 +10438,6 @@ int main(int argc, char** argv) {
 
             case RECORD:
                 currentPrev = RECORD;
-                /*draw(renderer, mainRecordTexture, bonusGame);
-                if (firstPlayer == 1) { draw(renderer, firstPlayerTexture, player1); }
-                if (firstPlayer == 2) { draw(renderer, secondPlayerTexture, player2); }
-                draw(renderer, recordTexture, record);*/
                 if (firstPlayer == 1) {
                     _itoa_s(tmpSum1, text, 10);
                     textTexture = get_text_texture(renderer, text, my_font);
@@ -10594,16 +10454,36 @@ int main(int argc, char** argv) {
                     SDL_GetMouseState(&x, &y);
                     if (isHit(x, y, record)) {
                         if (firstPlayer == 1) {
-                            score1 += tmpSum1;
                             if (choiceDiffLevel == 1 || choiceDiffLevel == 2 || choiceDiffLevel == 3 || choiceDiffLevel == 4) {
-                                if (score1 > 200 && score1 < 250) {
-
+                                if (score1 > 200 && tmpSum1 < (250 - score1)) {
+                                    draw(renderer, pitTexture, upperCub);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                    tmpSum1 = 0;
+                                    currentState = PLAYER2;
+                                    cur_brosok = kubik5;
+                                    break;
                                 }
                             }
+                            if (choiceDiffLevel == 3 || choiceDiffLevel == 4) {
+                                if (score1 > 600 && tmpSum1 < (650 - score1)) {
+                                    draw(renderer, pitTexture, upperCub);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                    tmpSum1 = 0;
+                                    currentState = PLAYER2;
+                                    cur_brosok = kubik5;
+                                    break;
+                                }
+                            }
+                            score1 += tmpSum1;
+
+
                             if (choiceDiffLevel == 4) {
                                 if (score1 == 555) {
                                     draw(renderer, samosvalTexture, upperCub);
                                     SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
                                     score1 = 0;
                                 }
                             }
@@ -10618,20 +10498,45 @@ int main(int argc, char** argv) {
                         }
 
                         if (firstPlayer == 2) {
-                            score2 += tmpSum2;
-                            if (choiceDiffLevel == 1 || choiceDiffLevel == 2 || choiceDiffLevel == 3 || choiceDiffLevel == 4) {
-                                if (score2 > 200 && score2 < 250) {
 
+                            if (choiceDiffLevel == 1 || choiceDiffLevel == 2 || choiceDiffLevel == 3 || choiceDiffLevel == 4) {
+                                if (score2 > 200 && tmpSum2 < (250 - score2)) {
+                                    draw(renderer, pitTexture, upperCub);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                    tmpSum1 = 0;
+                                    currentState = PLAYER1;
+                                    cur_brosok = kubik5;
+                                    break;
                                 }
                             }
+
+                            if (choiceDiffLevel == 3 || choiceDiffLevel == 4) {
+                                if (score2 > 600 && tmpSum2 < (650 - score2)) {
+                                    draw(renderer, pitTexture, upperCub);
+                                    SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
+                                    tmpSum2 = 0;
+                                    currentState = PLAYER1;
+                                    cur_brosok = kubik5;
+                                    break;
+                                }
+                            }
+                            score2 += tmpSum2;
+
+
                             if (choiceDiffLevel == 4) {
                                 if (score2 == 555) {
                                     draw(renderer, samosvalTexture, upperCub);
                                     SDL_RenderPresent(renderer);
+                                    SDL_Delay(1000);
                                     score2 = 0;
                                 }
                             }
-                            if (score2 > 1000) { currentState = WIN_PLAYER2; }
+
+
+
+                            if (score2 >= 1000) { currentState = WIN_PLAYER2; }
                             else {
                                 tmpSum2 = 0;
                                 currentState = PLAYER1;
@@ -10640,6 +10545,9 @@ int main(int argc, char** argv) {
                             break;
                         }
                     }
+
+
+
                     if (isHit(x, y, brosok))
                     {
                         if (firstPlayer == 1) {
@@ -10704,22 +10612,60 @@ int main(int argc, char** argv) {
 
 
             case WIN_PLAYER1:
-                //SDL_Delay(1000);
+                firstPlayer = 1;
                 draw(renderer, winPlayer1Texture, bonusGame);
                 SDL_RenderPresent(renderer);
                 SDL_Delay(2000);
-                //quit = true;
+                currentState = SAVE_RESULT;
                 break;
 
             case WIN_PLAYER2:
-                //SDL_Delay(1000);
+                firstPlayer = 2;
                 draw(renderer, winPlayer2Texture, bonusGame);
                 SDL_RenderPresent(renderer);
                 SDL_Delay(2000);
-                quit = true;
                 break;
 
+
+
+            case SAVE_RESULT:
+                FILE* f1;
+                fopen_s(&f1, "C:/Users/ADMIN/source/repos/KOSTI/KOSTI/settings.txt", "w");
+                if (f1) {
+                    fprintf(f1, "%d %d", &fonMusic, &musEffects);
+                }
+                fclose(f1);
+                draw(renderer, saveResultTexture, bonusGame);
+                if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                    SDL_GetMouseState(&x, &y);
+                    if (isHit(x, y, yesSave)) {
+                        FILE* f;
+                        fopen_s(&f, "C:/Users/ADMIN/source/repos/KOSTI/KOSTI/progress.txt", "w");
+                        if (f) {
+                            fprintf(f, "%d %d %d", &firstPlayer, &score1, &score2);
+                        }
+                        fclose(f);
+                        currentState = MENU;
+                    }
+                    if (isHit(x, y, noSave)) {
+                        currentState = MENU;
+                    }
+                }
+                score1 = 0;
+                score2 = 0;
+                tmpSum1 = 0;
+                tmpSum2 = 0;
+                cnt_cub = 0;
+                bolt1 = 0;
+                bolt2 = 0;
+                choiceDiffLevel = 0;
+                raffle1 = 0;
+                raffle2 = 0;
+                firstPlayer = 1;
+
+                break;
             }
+
 
 
 
