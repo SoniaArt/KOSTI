@@ -933,6 +933,7 @@ int main(int argc, char** argv) {
             switch (currentState)
             {
             case MENU:
+                currentPrev = MENU;
                 SDL_RenderCopy(renderer, fonTexture, NULL, NULL);
                 if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
                 {
@@ -10453,7 +10454,7 @@ int main(int argc, char** argv) {
                     SDL_GetMouseState(&x, &y);
                     if (isHit(x, y, record)) {
                         if (firstPlayer == 1) {
-                            if (choiceDiffLevel == 1 || choiceDiffLevel == 2 || choiceDiffLevel == 3 || choiceDiffLevel == 4) {
+                            if (choiceDiffLevel == 2 || choiceDiffLevel == 3 || choiceDiffLevel == 4) {
                                 if (score1 > 200 && tmpSum1 < (250 - score1)) {
                                     draw(renderer, pitTexture, upperCub);
                                     SDL_RenderPresent(renderer);
@@ -10498,7 +10499,7 @@ int main(int argc, char** argv) {
 
                         if (firstPlayer == 2) {
 
-                            if (choiceDiffLevel == 1 || choiceDiffLevel == 2 || choiceDiffLevel == 3 || choiceDiffLevel == 4) {
+                            if (choiceDiffLevel == 2 || choiceDiffLevel == 3 || choiceDiffLevel == 4) {
                                 if (score2 > 200 && tmpSum2 < (250 - score2)) {
                                     draw(renderer, pitTexture, upperCub);
                                     SDL_RenderPresent(renderer);
@@ -10623,6 +10624,7 @@ int main(int argc, char** argv) {
                 draw(renderer, winPlayer2Texture, bonusGame);
                 SDL_RenderPresent(renderer);
                 SDL_Delay(2000);
+                currentState = SAVE_RESULT;
                 break;
 
 
@@ -10631,7 +10633,7 @@ int main(int argc, char** argv) {
                 FILE* f1;
                 fopen_s(&f1, "C:/Users/ADMIN/source/repos/KOSTI/KOSTI/settings.txt", "w");
                 if (f1) {
-                    fprintf(f1, "%d %d", &fonMusic, &musEffects);
+                    fprintf(f1, "%d %d", fonMusic, musEffects);
                 }
                 fclose(f1);
                 draw(renderer, saveResultTexture, bonusGame);
@@ -10641,26 +10643,38 @@ int main(int argc, char** argv) {
                         FILE* f;
                         fopen_s(&f, "C:/Users/ADMIN/source/repos/KOSTI/KOSTI/progress.txt", "w");
                         if (f) {
-                            fprintf(f, "%d %d %d", &firstPlayer, &score1, &score2);
+                            fprintf(f, "%d %d %d", firstPlayer, score1, score2);
                         }
                         fclose(f);
                         currentState = MENU;
+                        score1 = 0;
+                        score2 = 0;
+                        tmpSum1 = 0;
+                        tmpSum2 = 0;
+                        cnt_cub = 0;
+                        bolt1 = 0;
+                        bolt2 = 0;
+                        choiceDiffLevel = 0;
+                        raffle1 = 0;
+                        raffle2 = 0;
+                        firstPlayer = 1;
                     }
                     if (isHit(x, y, noSave)) {
                         currentState = MENU;
+                        score1 = 0;
+                        score2 = 0;
+                        tmpSum1 = 0;
+                        tmpSum2 = 0;
+                        cnt_cub = 0;
+                        bolt1 = 0;
+                        bolt2 = 0;
+                        choiceDiffLevel = 0;
+                        raffle1 = 0;
+                        raffle2 = 0;
+                        firstPlayer = 1;
                     }
                 }
-                score1 = 0;
-                score2 = 0;
-                tmpSum1 = 0;
-                tmpSum2 = 0;
-                cnt_cub = 0;
-                bolt1 = 0;
-                bolt2 = 0;
-                choiceDiffLevel = 0;
-                raffle1 = 0;
-                raffle2 = 0;
-                firstPlayer = 1;
+                
 
                 break;
             }
